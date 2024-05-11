@@ -26,9 +26,9 @@
  *                       id:
  *                         type: integer
  *                         description: The user's ID.
- *                       address:
+ *                       email:
  *                         type: string
- *                         description: The user's email address.
+ *                         description: The user's email email.
  *                       createdAt:
  *                         type: string
  *                         format: date-time
@@ -50,10 +50,10 @@
  *         schema:
  *           type: object
  *           required:
- *             - address
+ *             - email
  *             - password
  *           properties:
- *             address:
+ *             email:
  *               type: string
  *             password:
  *               type: string
@@ -79,10 +79,10 @@
  *         schema:
  *           type: object
  *           required:
- *             - address
+ *             - email
  *             - password
  *           properties:
- *             address:
+ *             email:
  *               type: string
  *             password:
  *               type: string
@@ -92,7 +92,7 @@
  *       400:
  *         description: Bad request.
  *       409:
- *         description: Email address is already in use.
+ *         description: Email email is already in use.
  *       500:
  *         description: Internal server error.
  * /api/protectedResource:
@@ -115,15 +115,16 @@
  */
 
 import express from "express"
-import { getProtectedResource, getUsers, login, register } from "../controllers/usersController"
-import { authenticateToken, permission, refreshToken} from "../middleware/authMiddleware"
+import { forgotPassword, getProtectedResource, getUsers, login, register } from "../controllers/usersController"
+import { authenticateToken, permission, refreshToken } from "../middleware/authMiddleware"
 
 const router = express.Router()
 
 router.post("/login", login)
 router.get("/users", getUsers)
 router.post("/register", register)
-router.get("/refresh-token", refreshToken);
-router.get("/protectedResource", authenticateToken, permission("secretary"), getProtectedResource);
+router.get("/refresh-token", refreshToken)
+router.get("/protectedResource", authenticateToken, permission("secretary"), getProtectedResource)
+router.post("/forgot_password", forgotPassword)
 
 export default router

@@ -1,19 +1,19 @@
-export type address = {
+export type email = {
   firstName: string
   lastName: string
-  address: string
+  email: string
   zipCode: number | null
   province: string
   country: string
 }
 
-export type paymentMethod = 'cashOnDelivery' | 'creditCard'
+export type paymentMethod = "cashOnDelivery" | "creditCard"
 export type checkoutOptions = {
   paymentMethod: paymentMethod
   creditCardInformation: creditCardInformation
-  billingAddress: address
-  shippingAddress: address
-  useShippingAddress: boolean
+  billingemail: email
+  shippingemail: email
+  useShippingemail: boolean
 }
 export type creditCardInformation = {
   firstName: string

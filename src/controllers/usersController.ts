@@ -1,8 +1,13 @@
 import { Request, Response } from "express"
 import { generateAccessToken, generateRefreshToken } from "../services/authService"
 import { getUsersService } from "../services/userService"
-import { createNewUserRepository, fetchUserByAddressRepository } from "../repository/userRepository"
+import {
+  createNewUserRepository,
+  fetchUserByAddressRepository,
+  fetchUserByemailRepository
+} from "../repository/userRepository"
 import bcrypt from "bcrypt"
+import { generateResetToken, sendResetEmail } from "services/resetPasswordService"
 
 export async function getUsers(req: Request, res: Response): Promise<void> {
   try {
@@ -17,15 +22,15 @@ export async function getUsers(req: Request, res: Response): Promise<void> {
 
 export async function login(req: Request, res: Response): Promise<Response<unknown, Record<string, unknown>>> {
   try {
-    const { address, password } = req.body
+    const { email, password } = req.body
 
-    // Check if the address and password are present
-    if (!address || !password) {
-      return res.status(400).json("Address and password are required")
+    // Check if the email and password are present
+    if (!email || !password) {
+      return res.status(400).json("email and password are required")
     }
 
-    // Retrieve user from the database based on the address
-    const user = await fetchUserByAddressRepository(address)
+    // Retrieve user from the database based on the email
+    const user = await fetchUserByemailRepository(email)
 
     // Check if the user exists
     if (!user) {
@@ -54,30 +59,65 @@ export async function login(req: Request, res: Response): Promise<Response<unkno
 
 export async function register(req: Request, res: Response): Promise<Response<unknown, Record<string, unknown>>> {
   try {
-    const { address, password } = req.body
+    const { email, password } = req.body
 
-    // Check if the address and password are present
-    if (!address || !password) {
-      return res.status(400).json("Address and password are required")
+    // Check if the email and password are present
+    if (!email || !password) {
+      return res.status(400).json("email and password are required")
     }
 
-    // Check if the email address already exists in the database
-    const existingUser = await fetchUserByAddressRepository(address)
+    // Check if the email email already exists in the database
+    const existingUser = await fetchUserByemailRepository(email)
     if (existingUser) {
-      return res.status(409).json("Email address is already in use")
+      return res.status(409).json("Email email is already in use")
     }
 
     // Encrypt the password before saving it to the database
     const hashedPassword = await bcrypt.hash(password, 10)
 
     // Create a new user with the hashed password and default role "affiliate"
-    await createNewUserRepository({ address, password: hashedPassword, role: "affiliate" })
+    await createNewUserRepository({ email, password: hashedPassword, role: "affiliate" })
 
     // Respond with success
     return res.status(201).json({ success: true, message: "User created successfully" })
   } catch (error) {
     console.error(error)
     return res.status(500).json({ message: error.message })
+  }
+}
+
+export async function forgotPassword(req: Request, res: Response): Promise<Response<unknown, Record<string, unknown>>> {
+  console.log("Entered forgotPassword route")
+
+  try {
+    const { email } = req.body
+
+    console.log("Received email:", email)
+
+    // Validate the email field
+    if (!email) {
+      console.log("Email is required")
+      return res.status(400).json({ success: false, message: "Email is required" })
+    }
+
+    // Retrieve user from the database based on the email
+    const user = await fetchUserByAddressRepository(email)
+
+    // Check if the user exists
+    if (!user) {
+      console.log("User not found")
+      return res.status(404).json({ success: false, message: "User not found" })
+    }
+
+    // Generate a reset token and send a reset email
+    const resetToken = generateResetToken(user)
+    await sendResetEmail(user, resetToken)
+
+    // Respond with success
+    return res.status(200).json({ success: true, message: "Password reset instructions sent to your email" })
+  } catch (error) {
+    console.error("Error during password reset:", error)
+    return res.status(500).json({ success: false, message: "Internal server error" })
   }
 }
 
