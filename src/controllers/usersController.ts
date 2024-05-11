@@ -1,10 +1,10 @@
 import { Request, Response } from "express"
-import { generateAccessToken, generateRefreshToken } from "../services/authService"
+import { generateAccessToken, generateRefreshToken, verifyResetToken } from "../services/authService"
 import { getUsersService } from "../services/userService"
 import {
   createNewUserRepository,
   fetchUserByAddressRepository,
-  fetchUserByemailRepository
+  updatePasswordRepository
 } from "../repository/userRepository"
 import bcrypt from "bcrypt"
 import { generateResetToken, sendResetEmail } from "services/resetPasswordService"
@@ -30,7 +30,7 @@ export async function login(req: Request, res: Response): Promise<Response<unkno
     }
 
     // Retrieve user from the database based on the email
-    const user = await fetchUserByemailRepository(email)
+    const user = await fetchUserByAddressRepository(email)
 
     // Check if the user exists
     if (!user) {
@@ -67,7 +67,7 @@ export async function register(req: Request, res: Response): Promise<Response<un
     }
 
     // Check if the email email already exists in the database
-    const existingUser = await fetchUserByemailRepository(email)
+    const existingUser = await fetchUserByAddressRepository(email)
     if (existingUser) {
       return res.status(409).json("Email email is already in use")
     }
@@ -118,6 +118,33 @@ export async function forgotPassword(req: Request, res: Response): Promise<Respo
   } catch (error) {
     console.error("Error during password reset:", error)
     return res.status(500).json({ success: false, message: "Internal server error" })
+  }
+}
+
+export async function resetPassword(req: Request, res: Response): Promise<Response<unknown, Record<string, unknown>>> {
+  try {
+    const { resetToken, newPassword } = req.body
+
+    // Check if resetToken and newPassword are present
+    if (!resetToken || !newPassword) {
+      return res.status(400).json("Reset token and new password are required")
+    }
+
+    // Verify the reset token
+    const decodedToken = verifyResetToken(resetToken)
+    if (!decodedToken) {
+      return res.status(403).json({ message: "Invalid reset token" })
+    }
+
+    // Update the user's password in the database
+
+    await updatePasswordRepository(decodedToken.id, newPassword)
+
+    // Respond with success
+    return res.status(200).json({ success: true, message: "Password reset successful" })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ message: error.message })
   }
 }
 

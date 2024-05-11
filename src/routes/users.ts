@@ -115,7 +115,14 @@
  */
 
 import express from "express"
-import { forgotPassword, getProtectedResource, getUsers, login, register } from "../controllers/usersController"
+import {
+  forgotPassword,
+  getProtectedResource,
+  getUsers,
+  login,
+  register,
+  resetPassword
+} from "../controllers/usersController"
 import { authenticateToken, permission, refreshToken } from "../middleware/authMiddleware"
 
 const router = express.Router()
@@ -126,5 +133,5 @@ router.post("/register", register)
 router.get("/refresh-token", refreshToken)
 router.get("/protectedResource", authenticateToken, permission("secretary"), getProtectedResource)
 router.post("/forgot_password", forgotPassword)
-
+router.put("/reset_password", resetPassword)
 export default router

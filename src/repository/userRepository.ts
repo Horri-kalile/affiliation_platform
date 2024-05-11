@@ -1,4 +1,5 @@
 import User from "../models/users.model"
+import bcrypt from "bcrypt"
 
 export const createNewUserRepository = async (userData: {
   email: string
@@ -28,15 +29,31 @@ export const fetchUserByAddressRepository = async (email: string): Promise<User 
   }
 }
 
-export const fetchUserByemailRepository = async (email: string): Promise<User | null> => {
+export const updateResetTokenRepository = async (userId: number, resetToken: string): Promise<void> => {
   try {
-    const user = await User.findOne({
-      where: { email }
-    })
-
-    return user ? user : null
+    await User.update({ resetToken }, { where: { id: userId } })
   } catch (error) {
     console.error(error)
+    throw error
+  }
+}
+
+export const updatePasswordRepository = async (id: number, newPassword: string): Promise<boolean> => {
+  try {
+    console.log(id)
+    const hashedPassword = await bcrypt.hash(newPassword, 10)
+
+    const result = await User.update({ password: hashedPassword }, { where: { id } })
+
+    if (result[0] === 1) {
+      console.log("Password updated successfully !")
+      return true
+    } else {
+      console.log("No user found with the provided ID !")
+      return false
+    }
+  } catch (error) {
+    console.error("Error updating password in the database: " + error.message)
     throw error
   }
 }
