@@ -135,7 +135,7 @@ router.get("/refresh-token", refreshToken)
 router.get("/protectedResource", authenticateToken, permission("secretary"), getProtectedResource)
 router.post("/forgot_password", forgotPassword)
 router.put("/reset_password", resetPassword)
-router.post("/approve-registration/:userId", approveRegistration)
-router.post("/deny-registration/:userId", denyRegistration)
+router.post("/approve-registration", approveRegistration)
+router.post("/deny-registration", denyRegistration)
 
 export default router

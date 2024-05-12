@@ -5,6 +5,7 @@ export const createNewUserRepository = async (userData: {
   email: string
   password: string
   role: string
+  status: string
 }): Promise<User> => {
   const newUser = await User.create(userData)
   return newUser
@@ -74,6 +75,29 @@ export const fetchUserByEmailAndStatus = async (email: string, status: string): 
     })
 
     return user ? user : null
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+export const fetchUserByEmail = async (email: string): Promise<User | null> => {
+  try {
+    const user = await User.findOne({
+      where: { email }
+    })
+
+    return user ? user : null
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+export const fetchUserByIdRepository = async (userId: number): Promise<User | null> => {
+  try {
+    const user = await User.findByPk(userId)
+    return user || null
   } catch (error) {
     console.error(error)
     throw error

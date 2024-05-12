@@ -5,10 +5,10 @@ import {
   createNewUserRepository,
   fetchUserByAddressRepository,
   updatePasswordRepository,
-  fetchUserByEmailAndStatus
+  fetchUserByEmail
 } from "../repository/userRepository"
 import bcrypt from "bcrypt"
-import { generateResetToken, sendResetEmail } from "services/resetPasswordService"
+import { generateResetToken, sendResetEmail } from "../services/resetPasswordService"
 
 export async function getUsers(req: Request, res: Response): Promise<void> {
   try {
@@ -21,7 +21,7 @@ export async function getUsers(req: Request, res: Response): Promise<void> {
   }
 }
 
-export async function login(req: Request, res: Response): Promise<Response<unknown, Record<string, unknown>>> {
+/*export async function login(req: Request, res: Response): Promise<Response<unknown, Record<string, unknown>>> {
   try {
     const { email, password } = req.body
 
@@ -35,7 +35,57 @@ export async function login(req: Request, res: Response): Promise<Response<unkno
 
     // Check if the user exists
     if (!user) {
+      const userInWaitingList = await fetchUserByEmailAndStatus(email, "waiting list")
+      if (userInWaitingList) {
+        return res.status(403).json("You are still in the waiting list. Please wait for approval.")
+      }
       return res.status(404).json("User not found or not approved")
+    }
+
+    // Compare the provided password with the hashed password in the database
+    const passwordMatch = await bcrypt.compare(password, user.password)
+
+    if (passwordMatch) {
+      // Passwords match, generate an access token and a refresh token
+      const accessToken = generateAccessToken(user)
+      const refreshToken = generateRefreshToken(user)
+
+      // Respond with success, access token, and refresh token
+      return res.status(200).json({ success: true, message: "Login successful", accessToken, refreshToken })
+    } else {
+      // Passwords don't match
+      return res.status(401).json("Incorrect password")
+    }
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ message: error.message })
+  }
+}*/
+export async function login(req: Request, res: Response): Promise<Response<unknown, Record<string, unknown>>> {
+  try {
+    const { email, password } = req.body
+
+    // Check if the email and password are present
+    if (!email || !password) {
+      return res.status(400).json("email and password are required")
+    }
+
+    // Retrieve user from the database based on the email
+    const user = await fetchUserByEmail(email)
+
+    // Check if the user exists
+    if (!user) {
+      // User not found
+      return res.status(404).json("User not found")
+    }
+    if (user.status === "waiting list" || user.status === "") {
+      return res.status(403).json("Your still in the waiting list")
+    }
+    // Check if the user is approved
+    if (user.status === "denied") {
+      return res
+        .status(403)
+        .json("Your request has been denied. Please contact the administrator for more information.")
     }
 
     // Compare the provided password with the hashed password in the database
@@ -67,20 +117,22 @@ export async function register(req: Request, res: Response): Promise<Response<un
       return res.status(400).json("email and password are required")
     }
 
-    // Check if the email email already exists in the database
+    // Check if the email already exists in the database
     const existingUser = await fetchUserByAddressRepository(email)
     if (existingUser) {
-      return res.status(409).json("Email email is already in use")
+      return res.status(409).json("Email is already in use")
     }
 
     // Encrypt the password before saving it to the database
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    // Create a new user with the hashed password and default role "affiliate"
+    // Create a new user with the hashed password and default role "affiliate" and status "waiting list"
     await createNewUserRepository({ email, password: hashedPassword, role: "affiliate", status: "waiting list" })
 
-    // Respond with success
-    return res.status(201).json({ success: true, message: "User created successfully" })
+    // Respond with success and a message indicating the user is on the waiting list
+    return res
+      .status(201)
+      .json({ success: true, message: "You have been registered successfully. You are now on the waiting list." })
   } catch (error) {
     console.error(error)
     return res.status(500).json({ message: error.message })
