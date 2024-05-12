@@ -6,6 +6,7 @@ class User extends Model {
   public email!: string
   public password!: string
   public role!: string
+  public status!: string
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
 }
@@ -28,6 +29,10 @@ User.init(
     role: {
       type: DataTypes.STRING, // Assuming role will be a string, adjust data type if necessary
       allowNull: false
+    },
+    status: {
+      type: DataTypes.STRING,
+      defaultValue: "waiting list"
     }
   },
   {

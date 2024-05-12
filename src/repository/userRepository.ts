@@ -57,3 +57,25 @@ export const updatePasswordRepository = async (id: number, newPassword: string):
     throw error
   }
 }
+
+export const updateUserStatusRepository = async (userId: number, status: string): Promise<void> => {
+  try {
+    await User.update({ status }, { where: { id: userId } })
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
+export const fetchUserByEmailAndStatus = async (email: string, status: string): Promise<User | null> => {
+  try {
+    const user = await User.findOne({
+      where: { email, status }
+    })
+
+    return user ? user : null
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}

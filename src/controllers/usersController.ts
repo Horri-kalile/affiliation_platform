@@ -4,7 +4,8 @@ import { getUsersService } from "../services/userService"
 import {
   createNewUserRepository,
   fetchUserByAddressRepository,
-  updatePasswordRepository
+  updatePasswordRepository,
+  fetchUserByEmailAndStatus
 } from "../repository/userRepository"
 import bcrypt from "bcrypt"
 import { generateResetToken, sendResetEmail } from "services/resetPasswordService"
@@ -30,11 +31,11 @@ export async function login(req: Request, res: Response): Promise<Response<unkno
     }
 
     // Retrieve user from the database based on the email
-    const user = await fetchUserByAddressRepository(email)
+    const user = await fetchUserByEmailAndStatus(email, "approved")
 
     // Check if the user exists
     if (!user) {
-      return res.status(404).json("User not found")
+      return res.status(404).json("User not found or not approved")
     }
 
     // Compare the provided password with the hashed password in the database
@@ -76,7 +77,7 @@ export async function register(req: Request, res: Response): Promise<Response<un
     const hashedPassword = await bcrypt.hash(password, 10)
 
     // Create a new user with the hashed password and default role "affiliate"
-    await createNewUserRepository({ email, password: hashedPassword, role: "affiliate" })
+    await createNewUserRepository({ email, password: hashedPassword, role: "affiliate", status: "waiting list" })
 
     // Respond with success
     return res.status(201).json({ success: true, message: "User created successfully" })

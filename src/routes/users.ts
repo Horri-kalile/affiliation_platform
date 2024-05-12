@@ -124,6 +124,7 @@ import {
   resetPassword
 } from "../controllers/usersController"
 import { authenticateToken, permission, refreshToken } from "../middleware/authMiddleware"
+import { approveRegistration, denyRegistration } from "../controllers/secretaryController"
 
 const router = express.Router()
 
@@ -134,4 +135,7 @@ router.get("/refresh-token", refreshToken)
 router.get("/protectedResource", authenticateToken, permission("secretary"), getProtectedResource)
 router.post("/forgot_password", forgotPassword)
 router.put("/reset_password", resetPassword)
+router.post("/approve-registration/:userId", approveRegistration)
+router.post("/deny-registration/:userId", denyRegistration)
+
 export default router
