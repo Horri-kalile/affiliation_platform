@@ -59,11 +59,24 @@ export const updatePasswordRepository = async (id: number, newPassword: string):
   }
 }
 
-export const updateUserStatusRepository = async (userId: number, status: string): Promise<void> => {
+//updateUserStatusRepository with one userid select
+/*export const updateUserStatusRepository = async (userId: number, status: string): Promise<void> => {
   try {
     await User.update({ status }, { where: { id: userId } })
   } catch (error) {
     console.error(error)
+    throw error
+  }
+}*/
+
+export const updateUserStatusRepository = async (userIds: number[], status: string): Promise<boolean[]> => {
+  try {
+    const results = await Promise.all(userIds.map((userId) => User.update({ status }, { where: { id: userId } })))
+
+    // Return an array indicating success or failure for each user ID
+    return results.map((result) => result[0] > 0)
+  } catch (error) {
+    console.error("Error updating user status in the database:", error)
     throw error
   }
 }
