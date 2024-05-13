@@ -103,3 +103,35 @@ export const fetchUserByIdRepository = async (userId: number): Promise<User | nu
     throw error
   }
 }
+
+export const updateUserRepository = async (userId: number, userData: unknown): Promise<User | null> => {
+  try {
+    const [updatedRowsCount, updatedUser] = await User.update(userData, {
+      where: { id: userId },
+      returning: true // Return the updated user data
+    })
+
+    if (updatedRowsCount === 0) {
+      return null // User not found or not updated
+    }
+
+    return updatedUser[0] // Return the updated user
+  } catch (error) {
+    console.error("Error updating user in the database:", error)
+    throw error
+  }
+}
+
+// Delete user from the database
+export const deleteUserRepository = async (userId: number): Promise<boolean> => {
+  try {
+    const deletedRowsCount = await User.destroy({
+      where: { id: userId }
+    })
+
+    return deletedRowsCount > 0 // Return true if user was deleted, false otherwise
+  } catch (error) {
+    console.error("Error deleting user from the database:", error)
+    throw error
+  }
+}

@@ -5,10 +5,13 @@ import {
   createNewUserRepository,
   fetchUserByAddressRepository,
   updatePasswordRepository,
-  fetchUserByEmail
+  fetchUserByEmail,
+  updateUserRepository,
+  deleteUserRepository
 } from "../repository/userRepository"
 import bcrypt from "bcrypt"
 import { generateResetToken, sendResetEmail } from "../services/resetPasswordService"
+import User from "../models/users.model"
 
 export async function getUsers(req: Request, res: Response): Promise<void> {
   try {
@@ -21,46 +24,6 @@ export async function getUsers(req: Request, res: Response): Promise<void> {
   }
 }
 
-/*export async function login(req: Request, res: Response): Promise<Response<unknown, Record<string, unknown>>> {
-  try {
-    const { email, password } = req.body
-
-    // Check if the email and password are present
-    if (!email || !password) {
-      return res.status(400).json("email and password are required")
-    }
-
-    // Retrieve user from the database based on the email
-    const user = await fetchUserByEmailAndStatus(email, "approved")
-
-    // Check if the user exists
-    if (!user) {
-      const userInWaitingList = await fetchUserByEmailAndStatus(email, "waiting list")
-      if (userInWaitingList) {
-        return res.status(403).json("You are still in the waiting list. Please wait for approval.")
-      }
-      return res.status(404).json("User not found or not approved")
-    }
-
-    // Compare the provided password with the hashed password in the database
-    const passwordMatch = await bcrypt.compare(password, user.password)
-
-    if (passwordMatch) {
-      // Passwords match, generate an access token and a refresh token
-      const accessToken = generateAccessToken(user)
-      const refreshToken = generateRefreshToken(user)
-
-      // Respond with success, access token, and refresh token
-      return res.status(200).json({ success: true, message: "Login successful", accessToken, refreshToken })
-    } else {
-      // Passwords don't match
-      return res.status(401).json("Incorrect password")
-    }
-  } catch (error) {
-    console.error(error)
-    return res.status(500).json({ message: error.message })
-  }
-}*/
 export async function login(req: Request, res: Response): Promise<Response<unknown, Record<string, unknown>>> {
   try {
     const { email, password } = req.body
@@ -203,4 +166,68 @@ export async function resetPassword(req: Request, res: Response): Promise<Respon
 
 export function getProtectedResource(req: Request, res: Response): void {
   res.status(200).json({ message: "Access to protected resource granted" })
+}
+
+export async function updateUser(req: Request, res: Response): Promise<Response> {
+  try {
+    const userId = parseInt(req.params.id) // Extract userId from URL
+    const { email, password, role } = req.body
+
+    // Check if userId is provided
+    if (!userId) {
+      return res.status(400).json("userId is required")
+    }
+
+    // Check if the user exists
+    const existingUser = await User.findByPk(userId)
+    if (!existingUser) {
+      return res.status(404).json("User not found")
+    }
+
+    // Encrypt the new password (if provided)
+    let hashedPassword
+    if (password) {
+      hashedPassword = await bcrypt.hash(password, 10)
+    }
+
+    // Prepare the userData object for update
+    const userData: { email?: string; password?: string; role?: string } = {}
+    if (email) userData.email = email
+    if (hashedPassword) userData.password = hashedPassword
+    if (role) userData.role = role
+
+    // Update user details
+    await updateUserRepository(userId, userData)
+
+    return res.status(200).json({ success: true, message: "User updated successfully" })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ message: error.message })
+  }
+}
+
+// Delete a user
+export async function deleteUser(req: Request, res: Response): Promise<Response> {
+  try {
+    const userId = parseInt(req.params.id) // Extract userId from URL
+
+    // Check if userId is provided
+    if (!userId) {
+      return res.status(400).json("userId is required")
+    }
+
+    // Check if the user exists
+    const existingUser = await User.findByPk(userId)
+    if (!existingUser) {
+      return res.status(404).json("User not found")
+    }
+
+    // Delete the user
+    await deleteUserRepository(userId)
+
+    return res.status(200).json({ success: true, message: "User deleted successfully" })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ message: error.message })
+  }
 }

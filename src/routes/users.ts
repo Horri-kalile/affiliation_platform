@@ -116,12 +116,14 @@
 
 import express from "express"
 import {
+  deleteUser,
   forgotPassword,
   getProtectedResource,
   getUsers,
   login,
   register,
-  resetPassword
+  resetPassword,
+  updateUser
 } from "../controllers/usersController"
 import { authenticateToken, permission, refreshToken } from "../middleware/authMiddleware"
 import { approveRegistration, denyRegistration } from "../controllers/secretaryController"
@@ -137,5 +139,7 @@ router.post("/forgot_password", forgotPassword)
 router.put("/reset_password", resetPassword)
 router.post("/approve-registration", approveRegistration)
 router.post("/deny-registration", denyRegistration)
+router.put("/:id", updateUser)
+router.delete("/:id", deleteUser)
 
 export default router
