@@ -56,7 +56,7 @@ export async function refreshToken(req: Request, res: Response): Promise<Respons
   }
 }
 
-export function permission(requiredRole: string) {
+export function permission(requiredRole: string[]) {
   return function (req: Request, res: Response, next: NextFunction) {
     const token = req.headers["authorization"]?.split(" ")[1]
     if (!token) {
@@ -67,7 +67,7 @@ export function permission(requiredRole: string) {
       const decodedToken: any = verifyAccessToken(token)
       const userRole = decodedToken.role
 
-      if (userRole !== requiredRole) {
+      if (requiredRole.indexOf(userRole) === -1) {
         return res.status(403).json({ message: "Unauthorized access" })
       }
 
