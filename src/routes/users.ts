@@ -127,6 +127,7 @@ import {
 } from "../controllers/usersController"
 import { authenticateToken, permission, refreshToken } from "../middleware/authMiddleware"
 import { approveRegistration, denyRegistration } from "../controllers/secretaryController"
+import { createUrl, getUrls, updateUrl, deleteUrl } from "../controllers/secretaryController"
 
 const router = express.Router()
 
@@ -139,7 +140,11 @@ router.post("/forgot_password", forgotPassword)
 router.put("/reset_password", resetPassword)
 router.post("/approve-registration", approveRegistration)
 router.post("/deny-registration", denyRegistration)
-router.put("/:id", updateUser, permission(["secretary", "admin"]))
-router.delete("/:id", deleteUser, permission(["secretary", "admin"]))
+router.put("/updateUser/:id", updateUser, permission(["secretary", "admin"]))
+router.delete("/deleteUser/:id", deleteUser, permission(["secretary", "admin"]))
+router.post("/createUrl", createUrl)
+router.get("/getUrls/:id", getUrls)
+router.put("/updateUrl/:id", updateUrl)
+router.delete("/deleteUrl/:id", deleteUrl)
 
 export default router

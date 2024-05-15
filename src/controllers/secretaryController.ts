@@ -2,6 +2,11 @@
 import { Request, Response } from "express"
 import { updateUserStatusRepository } from "../repository/userRepository"
 
+import { Url } from "../models/url.model"
+import { Banner } from "../models/banner.model"
+import { Click } from "../models/click.model"
+import { Sequelize } from "sequelize"
+
 //approveRegistration and denyRegistration with one userid select
 /*export async function approveRegistration(req: Request, res: Response): Promise<Response> {
   try {
@@ -92,5 +97,92 @@ export async function denyRegistration(req: Request, res: Response): Promise<Res
   } catch (error) {
     console.error(error)
     return res.status(500).json({ message: error.message })
+  }
+}
+
+export async function createUrl(req: Request, res: Response): Promise<Response> {
+  try {
+    const { URL, dateAdded } = req.body
+    const newUrl = await Url.create({ URL, dateAdded })
+    return res.status(201).json({ success: true, data: newUrl })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ success: false, message: "Failed to create URL", error: error.message })
+  }
+}
+
+// Retrieve all URLs with related banners and click counts
+/*
+export async function getUrls(req: Request, res: Response): Promise<Response> {
+  try {
+    const urlId = parseInt(req.params.id)
+    if (!urlId) {
+      return res.status(400).json("URL ID is required")
+    }
+
+    // Retrieve the URL from the database based on the ID
+    const url = await Url.findByPk(urlId)
+
+    if (!url) {
+      return res.status(404).json("URL not found")
+    }
+
+    return res.status(200).json({ success: true, data: url })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ message: error.message })
+  }
+}*/
+
+export async function getUrls(req: Request, res: Response): Promise<Response> {
+  try {
+    const urls = await Url.findAll({
+      include: [
+        {
+          model: Banner,
+          attributes: ["id", "Url"]
+        },
+        {
+          model: Click,
+          attributes: [[Sequelize.fn("COUNT", Sequelize.col("id_click")), "clickCount"]]
+        }
+      ],
+      group: ["Url.id"] // Group by URL ID to avoid duplication
+    })
+    return res.status(200).json({ success: true, data: urls })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ success: false, message: "Failed to retrieve URLs", error: error.message })
+  }
+}
+
+// Update an existing URL
+export async function updateUrl(req: Request, res: Response): Promise<Response> {
+  try {
+    const { id } = req.params
+    const { URL, dateAdded } = req.body
+    const [updatedCount] = await Url.update({ URL, dateAdded }, { where: { id } })
+    if (updatedCount === 0) {
+      return res.status(404).json({ success: false, message: "URL not found" })
+    }
+    return res.status(200).json({ success: true, message: "URL updated successfully" })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ success: false, message: "Failed to update URL", error: error.message })
+  }
+}
+
+// Delete a URL
+export async function deleteUrl(req: Request, res: Response): Promise<Response> {
+  try {
+    const { id } = req.params
+    const deletedCount = await Url.destroy({ where: { id } })
+    if (deletedCount === 0) {
+      return res.status(404).json({ success: false, message: "URL not found" })
+    }
+    return res.status(200).json({ success: true, message: "URL deleted successfully" })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ success: false, message: "Failed to delete URL", error: error.message })
   }
 }
