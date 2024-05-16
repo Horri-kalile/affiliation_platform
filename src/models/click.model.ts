@@ -1,5 +1,6 @@
 import { Model, DataTypes } from "sequelize"
 import sequelize from "../config/database"
+import { Url } from "./url.model"
 
 class Click extends Model {
   // Define model attributes here
@@ -32,5 +33,5 @@ Click.init(
     timestamps: false // Optional: Set timestamps to false if you don't have createdAt and updatedAt columns
   }
 )
-
+Click.belongsTo(Url, { foreignKey: "UrlId", as: "url" })
 export { Click }

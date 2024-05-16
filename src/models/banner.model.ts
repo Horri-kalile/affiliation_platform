@@ -1,5 +1,6 @@
 import { Model, DataTypes } from "sequelize"
 import sequelize from "../config/database"
+import { Url } from "./url.model"
 
 class Banner extends Model {
   // Define model attributes here
@@ -24,5 +25,5 @@ Banner.init(
     timestamps: false // Optional: Set timestamps to false if you don't have createdAt and updatedAt columns
   }
 )
-
+Banner.belongsTo(Url, { foreignKey: "UrlId", as: "url" })
 export { Banner }
