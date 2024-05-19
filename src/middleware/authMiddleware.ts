@@ -1,13 +1,12 @@
-import { Request, Response, NextFunction } from "express"
-import { generateAccessToken, verifyAccessToken, verifyRefreshToken } from "../services/authService"
-import User from "models/users.model"
-interface CustomRequest extends Request {
-  user?: User
-}
+import { generateAccessToken, verifyAccessToken, verifyRefreshToken } from "@/services/auth"
+import { UserType } from "@/types"
+import { NextFunction, Request, Response } from "express"
+import { JwtPayload } from "jsonwebtoken"
 
-export async function authenticateToken(req: CustomRequest, res: Response, next: NextFunction): Promise<any> {
+export async function authenticateToken(req: Request, res: Response, next: NextFunction) {
   try {
     const authHeader = req.headers["authorization"]
+    console.log("authHeader", authHeader)
     const accessToken = authHeader && authHeader.split(" ")[1]
 
     if (!accessToken) {
@@ -18,7 +17,7 @@ export async function authenticateToken(req: CustomRequest, res: Response, next:
     if (!decodedToken) {
       return res.status(403).json({ message: "Invalid access token" })
     }
-    next()
+    return next()
   } catch (error) {
     console.error(error)
     return res.status(500).json({ message: "Internal server error" })
@@ -29,26 +28,17 @@ export async function refreshToken(req: Request, res: Response): Promise<Respons
   try {
     const authHeader = req.headers["authorization"]
     const token = authHeader && authHeader.split(" ")[1]
-
-    // Check if refresh token is provided
     if (!token) {
       console.log("Refresh token is missing")
       return res.status(400).json({ message: "Refresh token is missing" })
     }
-
-    // Verify the refresh token
     const decodedToken = verifyRefreshToken(token)
     console.log("Decoded refresh token:", decodedToken)
-    // Check if refresh token is valid
-    if (!decodedToken) {
+    if (typeof decodedToken === "string" || !decodedToken) {
       console.log("Invalid refresh token")
       return res.status(403).json({ message: "Invalid refresh token" })
     }
-
-    // Generate a new access token
-    const accessToken = generateAccessToken(decodedToken)
-
-    // Respond with the new access token
+    const accessToken = generateAccessToken(decodedToken as UserType)
     return res.status(200).json({ success: true, accessToken })
   } catch (error) {
     console.error(error)
@@ -64,8 +54,8 @@ export function permission(requiredRole: string[]) {
     }
 
     try {
-      const decodedToken: any = verifyAccessToken(token)
-      const userRole = decodedToken.role
+      const decodedToken = verifyAccessToken(token)
+      const userRole = (decodedToken as JwtPayload).role
 
       if (requiredRole.indexOf(userRole) === -1) {
         return res.status(403).json({ message: "Unauthorized access" })

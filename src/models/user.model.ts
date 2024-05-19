@@ -12,14 +12,14 @@ import {
 import AffiliateUrl from "./affiliateUrl.model"
 import Click from "./click.model"
 import Subscription from "./subscription.model"
-import User from "./user.model"
+import Url from "./url.model"
 
 @Table({
-  tableName: "urls",
-  modelName: "Url",
+  tableName: "users",
+  modelName: "User",
   timestamps: true
 })
-class Url extends Model<URL> {
+class User extends Model<User> {
   @PrimaryKey
   @Column({
     type: DataType.UUID,
@@ -28,9 +28,25 @@ class Url extends Model<URL> {
   declare id?: string
 
   @Column({
-    type: DataType.TEXT
+    type: DataType.STRING
   })
-  declare url: string
+  declare email: string
+
+  @Column({
+    type: DataType.STRING
+  })
+  declare password: string
+
+  @Column({
+    type: DataType.STRING
+  })
+  declare role: string
+
+  @Column({
+    type: DataType.STRING,
+    defaultValue: "waiting list"
+  })
+  declare status?: string
 
   @CreatedAt
   declare createdAt?: Date
@@ -38,13 +54,13 @@ class Url extends Model<URL> {
   @UpdatedAt
   declare updatedAt?: Date
 
-  @BelongsToMany(() => User, () => AffiliateUrl)
-  affiliates: User[]
-
   @HasMany(() => Click)
   clicks: Click[]
 
   @HasMany(() => Subscription)
   subscriptions: Subscription[]
+
+  @BelongsToMany(() => Url, () => AffiliateUrl)
+  urls: Url[]
 }
-export default Url
+export default User

@@ -1,13 +1,23 @@
-import { BelongsTo, Column, CreatedAt, DataType, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript"
+import {
+  BelongsTo,
+  Column,
+  CreatedAt,
+  DataType,
+  ForeignKey,
+  Model,
+  PrimaryKey,
+  Table,
+  UpdatedAt
+} from "sequelize-typescript"
 import Url from "./url.model"
 import User from "./user.model"
 
 @Table({
-  tableName: "clicks",
-  modelName: "Click",
-  timestamps: false
+  tableName: "subscriptions",
+  modelName: "Subscription",
+  timestamps: true
 })
-class Click extends Model<Click> {
+class Subscription extends Model<Subscription> {
   @PrimaryKey
   @Column({
     type: DataType.UUID,
@@ -27,12 +37,16 @@ class Click extends Model<Click> {
   })
   declare affiliateId: string
 
-  @CreatedAt
   @Column({
-    type: DataType.DATE,
-    defaultValue: DataType.NOW
+    type: DataType.DECIMAL(10, 2)
   })
-  declare clickDate?: Date
+  declare earnings: number
+
+  @CreatedAt
+  declare createdAt?: Date
+
+  @UpdatedAt
+  declare updatedAt?: Date
 
   @BelongsTo(() => Url)
   url: Url
@@ -40,4 +54,4 @@ class Click extends Model<Click> {
   @BelongsTo(() => User)
   affiliate: User
 }
-export default Click
+export default Subscription

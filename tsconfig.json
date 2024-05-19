@@ -5,8 +5,11 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "module": "CommonJS",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
     "moduleResolution": "node",
-    "baseUrl": "src/",
     "typeRoots": ["./src/types", "./node_modules/@types"],
     "resolveJsonModule": true,
     "outDir": "./dist",
