@@ -1,4 +1,3 @@
-// src/controllers/click.ts
 import Url from "@/models/url.model"
 import User from "@/models/user.model"
 import { createClick, deleteClick, fetchAllClicks, fetchClickById } from "@/services/click"

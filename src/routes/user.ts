@@ -29,3 +29,128 @@ router.post("/deny-registration", authenticateToken, permission(["secretary", "a
 router.post("/affiliate/register", register)
 
 export default router
+
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: User management
+ * paths:
+ *   /login:
+ *     post:
+ *       summary: Log in
+ *       tags: [Users]
+ *       responses:
+ *         '200':
+ *           description: User logged in successfully
+ *         '401':
+ *           description: Unauthorized
+ *   /forgot-password:
+ *     post:
+ *       summary: Request to reset password
+ *       tags: [Users]
+ *       responses:
+ *         '200':
+ *           description: Password reset request sent successfully
+ *         '401':
+ *           description: Unauthorized
+ *   /reset-password:
+ *     put:
+ *       summary: Reset password
+ *       tags: [Users]
+ *       responses:
+ *         '200':
+ *           description: Password reset successfully
+ *         '401':
+ *           description: Unauthorized
+ *   /users:
+ *     get:
+ *       summary: Get all users
+ *       tags: [Users]
+ *       security:
+ *         - bearerAuth: []
+ *       responses:
+ *         '200':
+ *           description: List of all users
+ *         '401':
+ *           description: Unauthorized
+ *   /updateUser/{id}:
+ *     put:
+ *       summary: Update a user by ID
+ *       tags: [Users]
+ *       security:
+ *         - bearerAuth: []
+ *       parameters:
+ *         - in: path
+ *           name: id
+ *           schema:
+ *             type: string
+ *           required: true
+ *           description: The ID of the user
+ *       responses:
+ *         '200':
+ *           description: The user was updated successfully
+ *         '401':
+ *           description: Unauthorized
+ *         '403':
+ *           description: Forbidden
+ *         '404':
+ *           description: Not found
+ *   /delete-user/{id}:
+ *     delete:
+ *       summary: Delete a user by ID
+ *       tags: [Users]
+ *       security:
+ *         - bearerAuth: []
+ *       parameters:
+ *         - in: path
+ *           name: id
+ *           schema:
+ *             type: string
+ *           required: true
+ *           description: The ID of the user
+ *       responses:
+ *         '200':
+ *           description: The user was deleted successfully
+ *         '401':
+ *           description: Unauthorized
+ *         '403':
+ *           description: Forbidden
+ *         '404':
+ *           description: Not found
+ *   /approve-registration:
+ *     post:
+ *       summary: Approve user registration
+ *       tags: [Users]
+ *       security:
+ *         - bearerAuth: []
+ *       responses:
+ *         '200':
+ *           description: User registration approved successfully
+ *         '401':
+ *           description: Unauthorized
+ *         '403':
+ *           description: Forbidden
+ *   /deny-registration:
+ *     post:
+ *       summary: Deny user registration
+ *       tags: [Users]
+ *       security:
+ *         - bearerAuth: []
+ *       responses:
+ *         '200':
+ *           description: User registration denied successfully
+ *         '401':
+ *           description: Unauthorized
+ *         '403':
+ *           description: Forbidden
+ *   /affiliate/register:
+ *     post:
+ *       summary: Register as an affiliate
+ *       tags: [Users]
+ *       responses:
+ *         '200':
+ *           description: User registered as an affiliate successfully
+ *         '401':
+ *           description: Unauthorized
+ */

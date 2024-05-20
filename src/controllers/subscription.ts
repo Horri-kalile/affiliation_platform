@@ -1,4 +1,3 @@
-// src/controllers/subscription.ts
 import Url from "@/models/url.model"
 import User from "@/models/user.model"
 import {

@@ -1,4 +1,3 @@
-// src/controllers/url.ts
 import { createUrl, deleteUrl, fetchAllUrls, fetchUrlById, updateUrl } from "@/services/url"
 import { UrlType } from "@/types"
 import { Request, Response } from "express"

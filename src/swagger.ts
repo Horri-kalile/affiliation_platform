@@ -5,14 +5,15 @@ const options = {
   swaggerDefinition: {
     restapi: "1.0.0",
     info: {
-      title: "My API",
+      title: "Affiliation Platform API",
       version: "1.0.0",
-      description: "My REST API"
+      description:
+        "API documentation for the Affiliation Platform, allowing management of affiliate URLs, clicks, subscriptions, and user-related operations."
     },
     servers: [
       {
         url: "http://localhost:3001",
-        description: 'Development server',
+        description: "Development server"
       }
     ]
   },
