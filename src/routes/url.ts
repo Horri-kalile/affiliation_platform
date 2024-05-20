@@ -6,10 +6,10 @@ import express from "express"
 const router = express.Router()
 
 // Routes for URLs
-router.post("/urls", authenticateToken, permission(["admin", "secretary"]), createNewUrl)
-router.get("/urls", authenticateToken, permission(["admin", "secretary"]), getAllUrls)
-router.get("/urls/:id", authenticateToken, permission(["admin", "secretary"]), getUrlById)
-router.put("/urls/:id", authenticateToken, permission(["admin", "secretary"]), updateExistingUrl)
-router.delete("/urls/:id", authenticateToken, permission(["admin", "secretary"]), deleteExistingUrl)
+router.post("/createNewurls", authenticateToken, permission(["admin", "secretary"]), createNewUrl)
+router.get("/getAllurls", authenticateToken, permission(["admin", "secretary"]), getAllUrls)
+router.get("/geturls/:id", authenticateToken, permission(["admin", "secretary"]), getUrlById)
+router.put("/updateExistingurls/:id", authenticateToken, permission(["admin", "secretary"]), updateExistingUrl)
+router.delete("/deleteExistingurls/:id", authenticateToken, permission(["admin", "secretary"]), deleteExistingUrl)
 
 export default router

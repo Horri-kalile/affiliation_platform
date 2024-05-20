@@ -1,5 +1,6 @@
 import {
   approveRegistration,
+  updateUser,
   deleteUser,
   denyRegistration,
   fetchAllUsers,
@@ -19,7 +20,7 @@ router.post("/forgot-password", forgotPassword)
 router.put("/reset-password", resetPassword)
 // super users
 router.get("/users", authenticateToken, permission(["secretary", "admin"]), fetchAllUsers)
-router.put("/updateUser/:id", authenticateToken, permission(["secretary", "admin"]))
+router.put("/updateUser/:id", authenticateToken, permission(["secretary", "admin"]), updateUser)
 router.delete("/delete-user/:id", authenticateToken, permission(["secretary", "admin"]), deleteUser)
 router.post("/register-me", registerUserByRole)
 router.post("/approve-registration", authenticateToken, permission(["secretary", "admin"]), approveRegistration)

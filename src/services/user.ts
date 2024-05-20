@@ -81,7 +81,7 @@ export const deleteUser = async (userId: number): Promise<boolean> => {
   }
 }
 
-export const updateUserStatus = async (userIds: number[], status: string) => {
+export const updateUserStatus = async (userIds: string[], status: string) => {
   try {
     const results = await Promise.all(userIds.map((userId) => User.update({ status }, { where: { id: userId } })))
     return results.map((result) => result[0] > 0)

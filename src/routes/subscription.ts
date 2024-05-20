@@ -11,9 +11,9 @@ import express from "express"
 const router = express.Router()
 
 // Routes for Subscriptions
-router.post("/subscriptions", authenticateToken, createNewSubscription)
-router.get("/subscriptions", authenticateToken, getAllSubscriptions)
-router.get("/subscriptions/:id", authenticateToken, getSubscriptionById)
-router.delete("/subscriptions/:id", authenticateToken, deleteExistingSubscription)
+router.post("/createNewsubscriptions", authenticateToken, createNewSubscription)
+router.get("/getAllsubscriptions", authenticateToken, getAllSubscriptions)
+router.get("/getsubscriptions/:id", authenticateToken, getSubscriptionById)
+router.delete("/deleteExistingsubscriptions/:id", authenticateToken, deleteExistingSubscription)
 
 export default router

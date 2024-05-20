@@ -173,7 +173,7 @@ export async function registerUserByRole(req: Request, res: Response) {
 
 export async function approveRegistration(req: Request, res: Response) {
   try {
-    const { affiliatesIds }: { affiliatesIds: number[] } = req.body
+    const { affiliatesIds }: { affiliatesIds: string[] } = req.body
     if (!affiliatesIds || !Array.isArray(affiliatesIds)) {
       return res.status(400).json("affiliatesIds must be provided as an array")
     }
@@ -186,7 +186,7 @@ export async function approveRegistration(req: Request, res: Response) {
 }
 export async function denyRegistration(req: Request, res: Response) {
   try {
-    const { affiliatesIds }: { affiliatesIds: number[] } = req.body
+    const { affiliatesIds }: { affiliatesIds: string[] } = req.body
     if (!affiliatesIds || !Array.isArray(affiliatesIds)) {
       return res.status(400).json("affiliatesIds must be provided as an array")
     }

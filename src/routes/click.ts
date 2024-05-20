@@ -6,9 +6,9 @@ import express from "express"
 const router = express.Router()
 
 // Routes for Clicks
-router.post("/clicks", authenticateToken, createNewClick)
-router.get("/clicks", authenticateToken, getAllClicks)
-router.get("/clicks/:id", authenticateToken, getClickById)
-router.delete("/clicks/:id", authenticateToken, deleteExistingClick)
+router.post("/createNewclicks", authenticateToken, createNewClick)
+router.get("/getAllclicks", authenticateToken, getAllClicks)
+router.get("/getclicks/:id", authenticateToken, getClickById)
+router.delete("/deleteExistingclicks/:id", authenticateToken, deleteExistingClick)
 
 export default router
