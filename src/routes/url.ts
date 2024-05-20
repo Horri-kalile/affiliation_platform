@@ -4,11 +4,11 @@ import express from "express"
 
 const router = express.Router()
 
-router.post("/createNewurls", authenticateToken, permission(["admin", "secretary"]), createNewUrl)
-router.get("/getAllurls", authenticateToken, permission(["admin", "secretary"]), getAllUrls)
-router.get("/geturl/:id", authenticateToken, permission(["admin", "secretary"]), getUrlById)
-router.put("/updateUrl/:id", authenticateToken, permission(["admin", "secretary"]), updateExistingUrl)
-router.delete("/deleteExistingurls/:id", authenticateToken, permission(["admin", "secretary"]), deleteExistingUrl)
+router.get("/urls", authenticateToken, permission(["admin", "secretary"]), getAllUrls)
+router.post("/urls/new", authenticateToken, permission(["admin", "secretary"]), createNewUrl)
+router.get("/urls/:id", authenticateToken, permission(["admin", "secretary"]), getUrlById)
+router.put("/urls/:id/edit", authenticateToken, permission(["admin", "secretary"]), updateExistingUrl)
+router.delete("/urls/:id/delete", authenticateToken, permission(["admin", "secretary"]), deleteExistingUrl)
 
 export default router
 
@@ -18,18 +18,7 @@ export default router
  *   name: URLs
  *   description: URL management
  * paths:
- *   /createNewurls:
- *     post:
- *       summary: Create a new URL
- *       tags: [URLs]
- *       security:
- *         - bearerAuth: []
- *       responses:
- *         '200':
- *           description: URL created successfully
- *         '401':
- *           description: Unauthorized
- *   /getAllurls:
+ *   /urls:
  *     get:
  *       summary: Get all URLs
  *       tags: [URLs]
@@ -40,7 +29,18 @@ export default router
  *           description: List of all URLs
  *         '401':
  *           description: Unauthorized
- *   /geturl/{id}:
+ *   /urls/new:
+ *     post:
+ *       summary: Create a new URL
+ *       tags: [URLs]
+ *       security:
+ *         - bearerAuth: []
+ *       responses:
+ *         '200':
+ *           description: URL created successfully
+ *         '401':
+ *           description: Unauthorized
+ *   /urls/{id}:
  *     get:
  *       summary: Get a URL by ID
  *       tags: [URLs]
@@ -60,7 +60,7 @@ export default router
  *           description: Unauthorized
  *         '404':
  *           description: Not found
- *   /updateUrl/{id}:
+ *   /urls/{id}/edit:
  *     put:
  *       summary: Update an existing URL by ID
  *       tags: [URLs]
@@ -82,7 +82,7 @@ export default router
  *           description: Forbidden
  *         '404':
  *           description: Not found
- *   /deleteExistingurls/{id}:
+ *   /urls/{id}/delete:
  *     delete:
  *       summary: Delete a URL by ID
  *       tags: [URLs]

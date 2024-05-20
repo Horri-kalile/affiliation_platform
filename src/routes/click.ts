@@ -4,11 +4,10 @@ import express from "express"
 
 const router = express.Router()
 
-// Routes for Clicks
-router.post("/createNewclicks", authenticateToken, createNewClick)
-router.get("/getAllclicks", authenticateToken, getAllClicks)
-router.get("/getclicks/:id", authenticateToken, getClickById)
-router.delete("/deleteExistingclicks/:id", authenticateToken, deleteExistingClick)
+router.get("/clicks", authenticateToken, getAllClicks)
+router.post("/clicks/new", authenticateToken, createNewClick)
+router.get("/clicks/:id", authenticateToken, getClickById)
+router.delete("/clicks/:id/delete", authenticateToken, deleteExistingClick)
 
 export default router
 
@@ -18,18 +17,7 @@ export default router
  *   name: Clicks
  *   description: Clicks management
  * paths:
- *   /createNewclicks:
- *     post:
- *       summary: Create a new click
- *       tags: [Clicks]
- *       security:
- *         - bearerAuth: []
- *       responses:
- *         '200':
- *           description: Click created successfully
- *         '401':
- *           description: Unauthorized
- *   /getAllclicks:
+ *   /clicks:
  *     get:
  *       summary: Get all clicks
  *       tags: [Clicks]
@@ -40,7 +28,18 @@ export default router
  *           description: List of all clicks
  *         '401':
  *           description: Unauthorized
- *   /getclicks/{id}:
+ *   /clicks/new:
+ *     post:
+ *       summary: Create a new click
+ *       tags: [Clicks]
+ *       security:
+ *         - bearerAuth: []
+ *       responses:
+ *         '200':
+ *           description: Click created successfully
+ *         '401':
+ *           description: Unauthorized
+ *   /clicks/{id}:
  *     get:
  *       summary: Get a click by ID
  *       tags: [Clicks]
@@ -60,7 +59,7 @@ export default router
  *           description: Unauthorized
  *         '404':
  *           description: Not found
- *   /deleteExistingclicks/{id}:
+ *   /clicks/{id}/delete:
  *     delete:
  *       summary: Delete a click by ID
  *       tags: [Clicks]

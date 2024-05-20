@@ -14,19 +14,21 @@ import { authenticateToken, permission } from "@/middleware/authMiddleware"
 import express from "express"
 const router = express.Router()
 
+// affiliates
+router.post("/register", register)
+
 // all users
 router.post("/login", login)
 router.post("/forgot-password", forgotPassword)
 router.put("/reset-password", resetPassword)
+
 // super users
 router.get("/users", authenticateToken, permission(["secretary", "admin"]), fetchAllUsers)
-router.put("/updateUser/:id", authenticateToken, permission(["secretary", "admin"]), updateUser)
-router.delete("/delete-user/:id", authenticateToken, permission(["secretary", "admin"]), deleteUser)
+router.put("/users/:id/edit", authenticateToken, permission(["secretary", "admin"]), updateUser)
+router.delete("/users/:id/delete", authenticateToken, permission(["secretary", "admin"]), deleteUser)
 router.post("/register-me", registerUserByRole)
-router.post("/approve-registration", authenticateToken, permission(["secretary", "admin"]), approveRegistration)
-router.post("/deny-registration", authenticateToken, permission(["secretary", "admin"]), denyRegistration)
-// affiliates
-router.post("/affiliate/register", register)
+router.post("/users/approve-registration", authenticateToken, permission(["secretary", "admin"]), approveRegistration)
+router.post("/users/deny-registration", authenticateToken, permission(["secretary", "admin"]), denyRegistration)
 
 export default router
 
@@ -36,6 +38,15 @@ export default router
  *   name: Users
  *   description: User management
  * paths:
+ *   /register:
+ *     post:
+ *       summary: Register as an affiliate
+ *       tags: [Users]
+ *       responses:
+ *         '200':
+ *           description: User registered as an affiliate successfully
+ *         '401':
+ *           description: Unauthorized
  *   /login:
  *     post:
  *       summary: Log in
@@ -74,7 +85,7 @@ export default router
  *           description: List of all users
  *         '401':
  *           description: Unauthorized
- *   /updateUser/{id}:
+ *   /users/{id}/edit:
  *     put:
  *       summary: Update a user by ID
  *       tags: [Users]
@@ -96,7 +107,7 @@ export default router
  *           description: Forbidden
  *         '404':
  *           description: Not found
- *   /delete-user/{id}:
+ *   /users/{id}/delete:
  *     delete:
  *       summary: Delete a user by ID
  *       tags: [Users]
@@ -118,7 +129,7 @@ export default router
  *           description: Forbidden
  *         '404':
  *           description: Not found
- *   /approve-registration:
+ *   /users/approve-registration:
  *     post:
  *       summary: Approve user registration
  *       tags: [Users]
@@ -131,7 +142,7 @@ export default router
  *           description: Unauthorized
  *         '403':
  *           description: Forbidden
- *   /deny-registration:
+ *   /users/deny-registration:
  *     post:
  *       summary: Deny user registration
  *       tags: [Users]
@@ -144,13 +155,4 @@ export default router
  *           description: Unauthorized
  *         '403':
  *           description: Forbidden
- *   /affiliate/register:
- *     post:
- *       summary: Register as an affiliate
- *       tags: [Users]
- *       responses:
- *         '200':
- *           description: User registered as an affiliate successfully
- *         '401':
- *           description: Unauthorized
  */

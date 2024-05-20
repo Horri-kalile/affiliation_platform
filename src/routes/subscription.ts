@@ -9,10 +9,10 @@ import express from "express"
 
 const router = express.Router()
 
-router.post("/createNewsubscriptions", authenticateToken, createNewSubscription)
-router.get("/getAllsubscriptions", authenticateToken, getAllSubscriptions)
-router.get("/getsubscriptions/:id", authenticateToken, getSubscriptionById)
-router.delete("/deleteExistingsubscriptions/:id", authenticateToken, deleteExistingSubscription)
+router.get("/subscriptions", authenticateToken, getAllSubscriptions)
+router.post("/subscriptions/new", authenticateToken, createNewSubscription)
+router.get("/subscriptions/:id", authenticateToken, getSubscriptionById)
+router.delete("/subscriptions/:id/delete", authenticateToken, deleteExistingSubscription)
 
 export default router
 
@@ -22,18 +22,7 @@ export default router
  *   name: Subscriptions
  *   description: Subscription management
  * paths:
- *   /createNewsubscriptions:
- *     post:
- *       summary: Create a new subscription
- *       tags: [Subscriptions]
- *       security:
- *         - bearerAuth: []
- *       responses:
- *         '200':
- *           description: Subscription created successfully
- *         '401':
- *           description: Unauthorized
- *   /getAllsubscriptions:
+ *   /subscriptions:
  *     get:
  *       summary: Get all subscriptions
  *       tags: [Subscriptions]
@@ -44,7 +33,18 @@ export default router
  *           description: List of all subscriptions
  *         '401':
  *           description: Unauthorized
- *   /getsubscriptions/{id}:
+ *   /subscriptions/new:
+ *     post:
+ *       summary: Create a new subscription
+ *       tags: [Subscriptions]
+ *       security:
+ *         - bearerAuth: []
+ *       responses:
+ *         '200':
+ *           description: Subscription created successfully
+ *         '401':
+ *           description: Unauthorized
+ *   /subscriptions/{id}:
  *     get:
  *       summary: Get a subscription by ID
  *       tags: [Subscriptions]
@@ -64,7 +64,7 @@ export default router
  *           description: Unauthorized
  *         '404':
  *           description: Not found
- *   /deleteExistingsubscriptions/{id}:
+ *   /subscriptions/{id}/delete:
  *     delete:
  *       summary: Delete a subscription by ID
  *       tags: [Subscriptions]

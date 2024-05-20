@@ -9,12 +9,11 @@ import express from "express"
 
 const router = express.Router()
 
-// Routes for AffiliateUrls
-router.post("/affiliate-urls", authenticateToken, permission(["admin", "secretary"]), createNewAffiliateUrl)
 router.get("/affiliate-urls", authenticateToken, permission(["admin", "secretary"]), getAllAffiliateUrls)
+router.post("/affiliate-urls/new", authenticateToken, permission(["admin", "secretary"]), createNewAffiliateUrl)
 router.get("/affiliate-urls/:affiliate_id/:url_id", authenticateToken, getAffiliateUrlByIds)
 router.delete(
-  "/affiliate-urls/:affiliate_id/:url_id",
+  "/affiliate-urls/:affiliate_id/:url_id/delete",
   authenticateToken,
   permission(["admin", "secretary"]),
   deleteExistingAffiliateUrl
@@ -29,6 +28,32 @@ export default router
  *   description: Affiliate URL management
  * paths:
  *   /affiliate-urls:
+ *     get:
+ *       summary: Get all affiliate URLs
+ *       tags: [AffiliateUrls]
+ *       security:
+ *         - bearerAuth: []
+ *       responses:
+ *         '200':
+ *           description: List of all affiliate URLs
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     affiliateId:
+ *                       type: string
+ *                       description: ID of the affiliate
+ *                     urlId:
+ *                       type: string
+ *                       description: ID of the URL
+ *         '401':
+ *           description: Unauthorized
+ *         '403':
+ *           description: Forbidden
+ *   /affiliate-urls/new:
  *     post:
  *       summary: Create a new affiliate URL
  *       tags: [AffiliateUrls]
@@ -107,6 +132,7 @@ export default router
  *           description: Forbidden
  *         '404':
  *           description: Not found
+ *   /affiliate-urls/{affiliate_id}/{url_id}/delete:
  *     delete:
  *       summary: Delete an affiliate URL by IDs
  *       tags: [AffiliateUrls]
