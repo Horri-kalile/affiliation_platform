@@ -27,25 +27,27 @@ export async function login(req: Request, res: Response) {
     }
     const user = await fetchUserByEmail(email)
     if (!user) {
-      return res.status(404).json("User not found")
+      return res.status(404).json({ message: "User not found" })
     }
     const passwordMatch = await bcrypt.compare(password, user.password)
     if (!passwordMatch) {
-      return res.status(401).json("wrong credentials")
+      return res.status(401).json({ message: "wrong credentials" })
     }
     if (user.role === "affiliate") {
       if (user.status === "waiting list" || user.status === "") {
-        return res.status(403).json("You are still in the waiting list")
+        return res.status(403).json({ message: "You are still in the waiting list" })
       }
       if (user.status === "denied") {
         return res
           .status(403)
-          .json("Your request has been denied. Please contact the administrator for more information.")
+          .json({ message: "Your request has been denied. Please contact the administrator for more information." })
       }
     }
     const accessToken = generateAccessToken(user)
     const refreshToken = generateRefreshToken(user)
-    return res.status(200).json({ success: true, message: "Login successful", accessToken, refreshToken })
+    return res
+      .status(200)
+      .json({ success: true, message: "Login successful", accessToken, refreshToken, role: user.role })
   } catch (error) {
     console.error(error)
     return res.status(500).json({ message: error.message })
