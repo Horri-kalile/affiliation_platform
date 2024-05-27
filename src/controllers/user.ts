@@ -122,7 +122,15 @@ export async function updateUser(req: Request, res: Response): Promise<Response>
     if (password) {
       hashedPassword = await bcrypt.hash(password, 10)
     }
-    const userData: { email?: string; password?: string; role?: string } = {}
+    const userData: {
+      firstName?: string
+      lastName?: string
+      phoneNumber?: string
+      country?: string
+      email?: string
+      password?: string
+      role?: string
+    } = { ...req.body }
     if (email) userData.email = email
     if (hashedPassword) userData.password = hashedPassword
     if (role) userData.role = role
