@@ -42,7 +42,7 @@ export const fetchUserByEmail = async (email: string): Promise<User | null> => {
   }
 }
 
-export const fetchUserById = async (userId: number): Promise<User | null> => {
+export const fetchUserById = async (userId: string): Promise<User | null> => {
   try {
     const user = await User.findByPk(userId)
     return user || null
@@ -52,7 +52,7 @@ export const fetchUserById = async (userId: number): Promise<User | null> => {
   }
 }
 
-export const updateUser = async (userId: number, userData: unknown): Promise<User | null> => {
+export const updateUser = async (userId: string, userData: unknown): Promise<User | null> => {
   try {
     const [updatedRowsCount, updatedUser] = await User.update(userData, {
       where: { id: userId },
@@ -69,7 +69,7 @@ export const updateUser = async (userId: number, userData: unknown): Promise<Use
 }
 
 // Delete user from the database
-export const deleteUser = async (userId: number): Promise<boolean> => {
+export const deleteUser = async (userId: string): Promise<boolean> => {
   try {
     const deletedRowsCount = await User.destroy({
       where: { id: userId }

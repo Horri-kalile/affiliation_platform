@@ -25,7 +25,7 @@ class User extends Model<User> {
     type: DataType.UUID,
     defaultValue: DataType.UUIDV4
   })
-  declare id?: string
+  declare id: string
 
   @Column({
     type: DataType.STRING

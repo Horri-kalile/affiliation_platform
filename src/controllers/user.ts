@@ -108,7 +108,7 @@ export const fetchAllUsers = async (req: Request, res: Response) => {
 
 export async function updateUser(req: Request, res: Response): Promise<Response> {
   try {
-    const userId = parseInt(req.params.id)
+    const userId = req.params.id
     const { email, password, role } = req.body
     if (!userId) {
       return res.status(400).json({ message: "userId is required" })
@@ -136,18 +136,19 @@ export async function updateUser(req: Request, res: Response): Promise<Response>
 
 export async function deleteUser(req: Request, res: Response): Promise<Response> {
   try {
-    const userId = parseInt(req.params.id)
+    const userId = req.params.id
     console.log("userId", userId)
 
     if (!userId) {
       return res.status(400).json({ message: "userId is required" })
+    } else {
+      const existingUser = await User.findByPk(userId)
+      if (!existingUser) {
+        return res.status(404).json("User not found")
+      }
+      await deleteUserService(userId)
+      return res.status(200).json({ success: true, message: "User deleted successfully" })
     }
-    const existingUser = await User.findByPk(userId)
-    if (!existingUser) {
-      return res.status(404).json("User not found")
-    }
-    await deleteUserService(userId)
-    return res.status(200).json({ success: true, message: "User deleted successfully" })
   } catch (error) {
     console.error(error)
     return res.status(500).json({ message: error.message })
