@@ -80,7 +80,7 @@ export async function resetPassword(req: Request, res: Response) {
   try {
     const { resetToken, newPassword } = req.body
     if (!resetToken || !newPassword) {
-      return res.status(400).json("Reset token and new password are required")
+      return res.status(400).json({ message: "Reset token and new password are required" })
     }
     const decodedToken = verifyResetToken(resetToken)
     if (typeof decodedToken === "string" || !decodedToken) {
@@ -111,12 +111,12 @@ export async function updateUser(req: Request, res: Response): Promise<Response>
     const userId = parseInt(req.params.id)
     const { email, password, role } = req.body
     if (!userId) {
-      return res.status(400).json("userId is required")
+      return res.status(400).json({ message: "userId is required" })
     }
 
     const existingUser = await fetchUserById(userId)
     if (!existingUser) {
-      return res.status(404).json("User not found")
+      return res.status(404).json({ message: "User not found" })
     }
     let hashedPassword
     if (password) {
@@ -140,7 +140,7 @@ export async function deleteUser(req: Request, res: Response): Promise<Response>
     console.log("userId", userId)
 
     if (!userId) {
-      return res.status(400).json("userId is required")
+      return res.status(400).json({ message: "userId is required" })
     }
     const existingUser = await User.findByPk(userId)
     if (!existingUser) {
@@ -156,16 +156,16 @@ export async function deleteUser(req: Request, res: Response): Promise<Response>
 
 export async function registerUserByRole(req: Request, res: Response) {
   try {
-    const { email, password, role } = req.body
-    if (!email || !password || !role) {
-      return res.status(400).json("missing credentials")
+    const { email, password, firstName, lastName, country, phoneNumber, role } = req.body
+    if (!email || !password || !firstName || !lastName || !country || !phoneNumber || !role) {
+      return res.status(400).json({ message: "Missing credentials" })
     }
     const existingUser = await fetchUserByEmail(email)
     if (existingUser) {
-      return res.status(409).json("Email is already in use")
+      return res.status(409).json({ message: "Email is already in use" })
     }
     const hashedPassword = await bcrypt.hash(password, 10)
-    await createUser({ email, password: hashedPassword, role })
+    await createUser({ email, password: hashedPassword, firstName, lastName, country, phoneNumber, role })
     return res.status(201).json({ success: true, message: "You have been registered as a " + role + " successfully." })
   } catch (error) {
     console.error(error)
@@ -200,19 +200,27 @@ export async function denyRegistration(req: Request, res: Response) {
   }
 }
 // affiliates
-
 export async function register(req: Request, res: Response) {
   try {
-    const { email, password } = req.body
-    if (!email || !password) {
-      return res.status(400).json("email and password are required")
+    const { email, password, firstName, lastName, phoneNumber, country } = req.body
+    if (!email || !password || !firstName || !lastName || !country || !phoneNumber) {
+      return res.status(400).json({ message: "All fields are required" })
     }
     const existingUser = await fetchUserByEmail(email)
     if (existingUser) {
-      return res.status(409).json("Email is already in use")
+      return res.status(409).json({ message: "Email is already in use" })
     }
     const hashedPassword = await bcrypt.hash(password, 10)
-    await createUser({ email, password: hashedPassword, role: "affiliate", status: "waiting list" })
+    await createUser({
+      email,
+      password: hashedPassword,
+      firstName,
+      lastName,
+      phoneNumber,
+      country,
+      role: "affiliate",
+      status: "waiting list"
+    })
     return res
       .status(201)
       .json({ success: true, message: "You have been registered successfully. You are now on the waiting list." })

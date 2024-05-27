@@ -40,7 +40,28 @@ class User extends Model<User> {
   @Column({
     type: DataType.STRING
   })
+  declare firstName: string
+
+  @Column({
+    type: DataType.STRING
+  })
+  declare lastName: string
+
+  @Column({
+    type: DataType.STRING
+  })
+  declare country: string
+
+  @Column({
+    type: DataType.STRING
+  })
   declare role: string
+
+  @Column({
+    type: DataType.STRING,
+    defaultValue: "affiliate"
+  })
+  declare phoneNumber: string
 
   @Column({
     type: DataType.STRING,
