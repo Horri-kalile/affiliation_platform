@@ -4,7 +4,7 @@ import express from "express"
 
 const router = express.Router()
 
-router.get("/urls", authenticateToken, permission(["admin", "secretary"]), getAllUrls)
+router.get("/urls", authenticateToken, permission(["admin", "secretary", "affiliate"]), getAllUrls)
 router.post("/urls/new", authenticateToken, permission(["admin", "secretary"]), createNewUrl)
 router.get("/urls/:id", authenticateToken, permission(["admin", "secretary"]), getUrlById)
 router.put("/urls/:id/edit", authenticateToken, permission(["admin", "secretary"]), updateExistingUrl)

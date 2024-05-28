@@ -21,6 +21,12 @@ class AffiliateUrl extends Model<AffiliateUrl> {
     type: DataType.UUID
   })
   declare url_id: string
+
+  @Column({
+    type: DataType.UUID,
+    defaultValue: "pending"
+  })
+  declare status: string
 }
 
 export default AffiliateUrl

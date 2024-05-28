@@ -4,7 +4,8 @@ import { AffiliateUrlType } from "@/types"
 export const createAffiliateUrl = async (affiliateUrlData: AffiliateUrlType): Promise<AffiliateUrl> => {
   const newAffiliateUrl = await AffiliateUrl.create({
     affiliate_id: affiliateUrlData.affiliateId,
-    url_id: affiliateUrlData.urlId
+    url_id: affiliateUrlData.urlId,
+    status: affiliateUrlData.status
   })
   return newAffiliateUrl
 }
