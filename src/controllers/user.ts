@@ -4,7 +4,9 @@ import {
   generateRefreshToken,
   generateResetToken,
   sendResetEmail,
-  verifyResetToken
+  verifyResetToken,
+  sendApprovalEmail,
+  sendDenialEmail
 } from "@/services/auth"
 import {
   createUser,
@@ -181,8 +183,52 @@ export async function registerUserByRole(req: Request, res: Response) {
     return res.status(500).json({ message: error.message })
   }
 }
-
 export async function approveRegistration(req: Request, res: Response) {
+  try {
+    const { affiliatesIds }: { affiliatesIds: string[] } = req.body
+    if (!affiliatesIds || !Array.isArray(affiliatesIds)) {
+      return res.status(400).json("affiliatesIds must be provided as an array")
+    }
+
+    const users = await Promise.all(
+      affiliatesIds.map(async (userId) => {
+        await updateUserStatus([userId], "approved")
+        return fetchUserById(userId)
+      })
+    )
+
+    await Promise.all(users.map((user) => sendApprovalEmail(user)))
+
+    return res.status(200).json({ success: true, message: "Affiliates approved successfully" })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ message: error.message })
+  }
+}
+
+export async function denyRegistration(req: Request, res: Response) {
+  try {
+    const { affiliatesIds }: { affiliatesIds: string[] } = req.body
+    if (!affiliatesIds || !Array.isArray(affiliatesIds)) {
+      return res.status(400).json("affiliatesIds must be provided as an array")
+    }
+
+    const users = await Promise.all(
+      affiliatesIds.map(async (userId) => {
+        await updateUserStatus([userId], "denied")
+        return fetchUserById(userId)
+      })
+    )
+
+    await Promise.all(users.map((user) => sendDenialEmail(user)))
+
+    return res.status(200).json({ success: true, message: "Affiliates denied successfully" })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ message: error.message })
+  }
+}
+/*export async function approveRegistration(req: Request, res: Response) {
   try {
     const { affiliatesIds }: { affiliatesIds: string[] } = req.body
     if (!affiliatesIds || !Array.isArray(affiliatesIds)) {
@@ -207,7 +253,7 @@ export async function denyRegistration(req: Request, res: Response) {
     console.error(error)
     return res.status(500).json({ message: error.message })
   }
-}
+}*/
 // affiliates
 export async function register(req: Request, res: Response) {
   try {

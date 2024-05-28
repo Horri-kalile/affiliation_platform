@@ -71,3 +71,53 @@ export async function sendResetEmail(user: UserType, resetToken: string): Promis
     throw error
   }
 }
+
+export async function sendApprovalEmail(user: UserType) {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD
+    }
+  })
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: user.email,
+    subject: "Registration Approved",
+    text: `Dear ${user.firstName},\n\nYour registration has been approved. Welcome!\n\nBest regards,\nYour App Team`
+  }
+
+  try {
+    await transporter.sendMail(mailOptions)
+    console.log("Approval email sent successfully.")
+  } catch (error) {
+    console.error("Error sending approval email:", error)
+    throw error
+  }
+}
+
+export async function sendDenialEmail(user: UserType) {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD
+    }
+  })
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: user.email,
+    subject: "Registration Denied",
+    text: `Dear ${user.firstName},\n\nWe regret to inform you that your registration has been denied.\n\nBest regards,\nYour App Team`
+  }
+
+  try {
+    await transporter.sendMail(mailOptions)
+    console.log("Denial email sent successfully.")
+  } catch (error) {
+    console.error("Error sending denial email:", error)
+    throw error
+  }
+}
