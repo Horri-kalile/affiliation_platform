@@ -257,7 +257,7 @@ export async function denyRegistration(req: Request, res: Response) {
 // affiliates
 export async function register(req: Request, res: Response) {
   try {
-    const { email, password, firstName, lastName, phoneNumber, country } = req.body
+    const { email, password, firstName, lastName, phoneNumber, country, role, status } = req.body
     if (!email || !password || !firstName || !lastName || !country || !phoneNumber) {
       return res.status(400).json({ message: "All fields are required" })
     }
@@ -265,6 +265,13 @@ export async function register(req: Request, res: Response) {
     if (existingUser) {
       return res.status(409).json({ message: "Email is already in use" })
     }
+    const userRole = role || "affiliate"
+    const userStatus = status || "waiting list"
+    const registrationMessage =
+      status !== "waiting list"
+        ? "You have been registered successfully."
+        : "You have been registered successfully. You are now on the waiting list."
+
     const hashedPassword = await bcrypt.hash(password, 10)
     await createUser({
       email,
@@ -273,12 +280,11 @@ export async function register(req: Request, res: Response) {
       lastName,
       phoneNumber,
       country,
-      role: "affiliate",
-      status: "waiting list"
+      role: userRole,
+      status: userStatus
     })
-    return res
-      .status(201)
-      .json({ success: true, message: "You have been registered successfully. You are now on the waiting list." })
+    console.log(req.body)
+    return res.status(201).json({ success: true, message: registrationMessage })
   } catch (error) {
     console.error(error)
     return res.status(500).json({ message: error.message })
