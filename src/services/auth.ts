@@ -85,7 +85,7 @@ export async function sendApprovalEmail(user: UserType) {
     from: process.env.EMAIL_USER,
     to: user.email,
     subject: "Registration Approved",
-    text: `Dear ${user.firstName},\n\nYour registration has been approved. Welcome!\n\nBest regards,\nYour App Team`
+    text: `Dear ${user.firstName},\n\nYour registration has been approved. Welcome!\n\nBest regards,\nNna ressources`
   }
 
   try {
@@ -110,7 +110,7 @@ export async function sendDenialEmail(user: UserType) {
     from: process.env.EMAIL_USER,
     to: user.email,
     subject: "Registration Denied",
-    text: `Dear ${user.firstName},\n\nWe regret to inform you that your registration has been denied.\n\nBest regards,\nYour App Team`
+    text: `Dear ${user.firstName},\n\nWe regret to inform you that your registration has been denied.\n\nBest regards,\nNna ressources`
   }
 
   try {
