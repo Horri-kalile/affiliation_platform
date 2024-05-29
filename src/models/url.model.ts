@@ -32,6 +32,16 @@ class Url extends Model<URL> {
   })
   declare url: string
 
+  @Column({
+    type: DataType.STRING
+  })
+  declare CompanyName: string
+
+  @Column({
+    type: DataType.STRING
+  })
+  declare Description: string
+
   @CreatedAt
   declare createdAt?: Date
 
