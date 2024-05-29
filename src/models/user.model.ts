@@ -58,6 +58,21 @@ class User extends Model<User> {
   declare role: string
 
   @Column({
+    type: DataType.STRING
+  })
+  declare occupation: string
+
+  @Column({
+    type: DataType.INTEGER
+  })
+  declare age: number
+
+  @Column({
+    type: DataType.STRING
+  })
+  declare gender: string
+
+  @Column({
     type: DataType.STRING,
     defaultValue: "affiliate"
   })

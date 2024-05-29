@@ -8,4 +8,7 @@ export type UserType = {
   phoneNumber: string
   role: string
   status?: string
+  occupation: string
+  age: number
+  gender: string
 }

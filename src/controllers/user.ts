@@ -132,6 +132,9 @@ export async function updateUser(req: Request, res: Response): Promise<Response>
       email?: string
       password?: string
       role?: string
+      occupation?: string
+      age?: number
+      gender?: string
     } = { ...req.body }
     if (email) userData.email = email
     if (hashedPassword) userData.password = hashedPassword
@@ -167,8 +170,19 @@ export async function deleteUser(req: Request, res: Response): Promise<Response>
 
 export async function registerUserByRole(req: Request, res: Response) {
   try {
-    const { email, password, firstName, lastName, country, phoneNumber, role } = req.body
-    if (!email || !password || !firstName || !lastName || !country || !phoneNumber || !role) {
+    const { email, password, firstName, lastName, country, phoneNumber, role, occupation, age, gender } = req.body
+    if (
+      !email ||
+      !password ||
+      !firstName ||
+      !lastName ||
+      !country ||
+      !phoneNumber ||
+      !role ||
+      !occupation ||
+      !age ||
+      !gender
+    ) {
       return res.status(400).json({ message: "Missing credentials" })
     }
     const existingUser = await fetchUserByEmail(email)
@@ -176,13 +190,25 @@ export async function registerUserByRole(req: Request, res: Response) {
       return res.status(409).json({ message: "Email is already in use" })
     }
     const hashedPassword = await bcrypt.hash(password, 10)
-    await createUser({ email, password: hashedPassword, firstName, lastName, country, phoneNumber, role })
+    await createUser({
+      email,
+      password: hashedPassword,
+      firstName,
+      lastName,
+      country,
+      phoneNumber,
+      role,
+      occupation,
+      age,
+      gender
+    })
     return res.status(201).json({ success: true, message: "You have been registered as a " + role + " successfully." })
   } catch (error) {
     console.error(error)
     return res.status(500).json({ message: error.message })
   }
 }
+
 export async function approveRegistration(req: Request, res: Response) {
   try {
     const { affiliatesIds }: { affiliatesIds: string[] } = req.body
@@ -257,8 +283,9 @@ export async function denyRegistration(req: Request, res: Response) {
 // affiliates
 export async function register(req: Request, res: Response) {
   try {
-    const { email, password, firstName, lastName, phoneNumber, country, role, status } = req.body
-    if (!email || !password || !firstName || !lastName || !country || !phoneNumber) {
+    const { email, password, firstName, lastName, phoneNumber, country, role, status, occupation, age, gender } =
+      req.body
+    if (!email || !password || !firstName || !lastName || !country || !phoneNumber || !occupation || !age || !gender) {
       return res.status(400).json({ message: "All fields are required" })
     }
     const existingUser = await fetchUserByEmail(email)
@@ -281,8 +308,12 @@ export async function register(req: Request, res: Response) {
       phoneNumber,
       country,
       role: userRole,
-      status: userStatus
+      status: userStatus,
+      occupation,
+      age,
+      gender
     })
+
     console.log(req.body)
     return res.status(201).json({ success: true, message: registrationMessage })
   } catch (error) {

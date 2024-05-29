@@ -19,8 +19,16 @@ export const createNewAffiliateUrl = async (req: Request, res: Response) => {
     if (!url) {
       return res.status(404).json({ success: false, message: "URL not found" })
     }
+<<<<<<< HEAD
     const requestStatus = status || "pending"
     const newAffiliateUrl = await createAffiliateUrl({ affiliateId, urlId, status: requestStatus })
+=======
+    const newAffiliateUrl = await createAffiliateUrl({
+      affiliateId,
+      urlId,
+      status: ""
+    })
+>>>>>>> b78a1d8ac3c9c8a2bfdfd7933abd807955a18a37
     return res.status(201).json({ success: true, data: newAffiliateUrl })
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message })
