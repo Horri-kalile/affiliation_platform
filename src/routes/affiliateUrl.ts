@@ -2,7 +2,9 @@ import {
   createNewAffiliateUrl,
   deleteExistingAffiliateUrl,
   getAffiliateUrlByIds,
-  getAllAffiliateUrls
+  getAllAffiliateUrls,
+  approveAffiliateUrls,
+  denyAffiliateUrls
 } from "@/controllers/affiliateUrl"
 import { authenticateToken, permission } from "@/middleware/authMiddleware"
 import express from "express"
@@ -18,9 +20,10 @@ router.delete(
   permission(["admin", "secretary"]),
   deleteExistingAffiliateUrl
 )
+router.patch("/affiliate-urls/approve", authenticateToken, permission(["admin", "secretary"]), approveAffiliateUrls)
+router.patch("/affiliate-urls/deny", authenticateToken, permission(["admin", "secretary"]), denyAffiliateUrls)
 
 export default router
-
 /**
  * @swagger
  * tags:
@@ -160,4 +163,84 @@ export default router
  *           description: Forbidden
  *         '404':
  *           description: Not found
+ * /affiliate-urls/approve:
+ *     patch:
+ *       summary: Approve multiple affiliate URL requests
+ *       tags: [AffiliateUrls]
+ *       security:
+ *         - bearerAuth: []
+ *       requestBody:
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 urls:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       affiliate_id:
+ *                         type: string
+ *                       url_id:
+ *                         type: string
+ *       responses:
+ *         '200':
+ *           description: Affiliate URLs approved
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     success:
+ *                       type: boolean
+ *                     message:
+ *                       type: string
+ *         '401':
+ *           description: Unauthorized
+ *         '403':
+ *           description: Forbidden
+ *   /affiliate-urls/deny:
+ *     patch:
+ *       summary: Deny multiple affiliate URL requests
+ *       tags: [AffiliateUrls]
+ *       security:
+ *         - bearerAuth: []
+ *       requestBody:
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 urls:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       affiliate_id:
+ *                         type: string
+ *                       url_id:
+ *                         type: string
+ *       responses:
+ *         '200':
+ *           description: Affiliate URLs denied
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     success:
+ *                       type: boolean
+ *                     message:
+ *                       type: string
+ *         '401':
+ *           description: Unauthorized
+ *         '403':
+ *           description: Forbidden
  */
