@@ -6,12 +6,11 @@ import {
   fetchAffiliateUrlByIds,
   fetchAllAffiliateUrls
 } from "@/services/affiliateUrl"
-import { AffiliateUrlType } from "@/types"
 import { Request, Response } from "express"
 
 export const createNewAffiliateUrl = async (req: Request, res: Response) => {
   try {
-    const { affiliateId, urlId }: AffiliateUrlType = req.body
+    const { affiliateId, urlId, status } = req.body
     const affiliate = await User.findByPk(affiliateId)
     if (!affiliate) {
       return res.status(404).json({ success: false, message: "Affiliate not found" })
@@ -20,11 +19,8 @@ export const createNewAffiliateUrl = async (req: Request, res: Response) => {
     if (!url) {
       return res.status(404).json({ success: false, message: "URL not found" })
     }
-    const newAffiliateUrl = await createAffiliateUrl({
-      affiliateId,
-      urlId,
-      status: ""
-    })
+    const requestStatus = status || "pending"
+    const newAffiliateUrl = await createAffiliateUrl({ affiliateId, urlId, status: requestStatus })
     return res.status(201).json({ success: true, data: newAffiliateUrl })
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message })
