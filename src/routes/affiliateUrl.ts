@@ -10,7 +10,7 @@ import express from "express"
 const router = express.Router()
 
 router.get("/affiliate-urls", authenticateToken, permission(["admin", "secretary"]), getAllAffiliateUrls)
-router.post("/affiliate-urls/new", authenticateToken, permission(["admin", "secretary"]), createNewAffiliateUrl)
+router.post("/affiliate-urls/new", authenticateToken, permission(["affiliate"]), createNewAffiliateUrl)
 router.get("/affiliate-urls/:affiliate_id/:url_id", authenticateToken, getAffiliateUrlByIds)
 router.delete(
   "/affiliate-urls/:affiliate_id/:url_id/delete",
