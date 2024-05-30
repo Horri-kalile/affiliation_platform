@@ -14,7 +14,7 @@ export const fetchAllUsers = async () => {
 
 export const updatePassword = async (id: number, newPassword: string) => {
   try {
-    console.log(id)
+    console.log(id) 
     const hashedPassword = await bcrypt.hash(newPassword, 10)
     const result = await User.update({ password: hashedPassword }, { where: { id } })
     if (result[0] === 1) {

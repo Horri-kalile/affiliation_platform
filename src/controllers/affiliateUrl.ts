@@ -4,7 +4,9 @@ import {
   createAffiliateUrl,
   deleteAffiliateUrl,
   fetchAffiliateUrlByIds,
-  fetchAllAffiliateUrls,approveAffiliateUrls as approveService, denyAffiliateUrls as denyService
+  fetchAllAffiliateUrls,
+  approveAffiliateUrls as approveService,
+  denyAffiliateUrls as denyService
 } from "@/services/affiliateUrl"
 import { AffiliateUrlStatusUpdate } from "@/types"
 import { Request, Response } from "express"
@@ -63,24 +65,23 @@ export const deleteExistingAffiliateUrl = async (req: Request, res: Response) =>
   }
 }
 
-
 export const approveAffiliateUrls = async (req: Request, res: Response) => {
-  const urls: AffiliateUrlStatusUpdate[] = req.body.urls;
+  const urls: AffiliateUrlStatusUpdate[] = req.body.urls
   try {
-    const results = await approveService(urls);
-    return res.status(200).json(results);
+    const results = await approveService(urls)
+    return res.status(200).json(results)
   } catch (error) {
-    return res.status(500).json({ success: false, message: "Internal Server Error", error });
+    return res.status(500).json({ success: false, message: "Internal Server Error", error })
   }
-};
+}
 
 // Deny multiple affiliate URLs
 export const denyAffiliateUrls = async (req: Request, res: Response) => {
-  const urls: AffiliateUrlStatusUpdate[] = req.body.urls;
+  const urls: AffiliateUrlStatusUpdate[] = req.body.urls
   try {
-    const results = await denyService(urls);
-    return res.status(200).json(results);
+    const results = await denyService(urls)
+    return res.status(200).json(results)
   } catch (error) {
-    return res.status(500).json({ success: false, message: "Internal Server Error", error });
+    return res.status(500).json({ success: false, message: "Internal Server Error", error })
   }
-};
+}
