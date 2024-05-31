@@ -6,7 +6,7 @@ const router = express.Router()
 
 router.get("/urls", authenticateToken, getAllUrls)
 router.post("/urls/new", authenticateToken, permission(["admin", "secretary"]), createNewUrl)
-router.get("/urls/:id", authenticateToken, permission(["admin", "secretary"]), getUrlById)
+router.get("/urls/:id", authenticateToken, getUrlById)
 router.put("/urls/:id/edit", authenticateToken, permission(["admin", "secretary"]), updateExistingUrl)
 router.delete("/urls/:id/delete", authenticateToken, permission(["admin", "secretary"]), deleteExistingUrl)
 
