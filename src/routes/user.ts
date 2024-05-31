@@ -8,10 +8,10 @@ import {
   login,
   register,
   registerUserByRole,
-  resetPassword
+  resetPassword,
+  getUserbyId
 } from "@/controllers/user"
 import { authenticateToken, permission } from "@/middleware/authMiddleware"
-import { fetchUserById } from "@/services/user"
 import express from "express"
 const router = express.Router()
 
@@ -25,7 +25,7 @@ router.put("/reset-password", resetPassword)
 
 // super users
 router.get("/users", authenticateToken, permission(["secretary", "admin"]), fetchAllUsers)
-router.get("/users/:id", fetchUserById)
+router.get("/users/:id", getUserbyId)
 router.put("/users/:id/edit", authenticateToken, permission(["secretary", "admin"]), updateUser)
 router.delete("/users/:id/delete", authenticateToken, permission(["secretary", "admin"]), deleteUser)
 router.post("/register-me", registerUserByRole)

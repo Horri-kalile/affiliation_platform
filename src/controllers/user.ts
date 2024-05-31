@@ -108,6 +108,20 @@ export const fetchAllUsers = async (req: Request, res: Response) => {
   }
 }
 
+export const getUserbyId = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.id
+    const user = await fetchUserById(userId)
+    if (user) {
+      res.json({ data: user })
+    } else {
+      res.status(404).json({ message: "User not found" })
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" })
+  }
+}
+
 export async function updateUser(req: Request, res: Response): Promise<Response> {
   try {
     const userId = req.params.id
