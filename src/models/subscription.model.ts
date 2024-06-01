@@ -25,6 +25,12 @@ class Subscription extends Model<Subscription> {
   })
   declare id?: string
 
+  @ForeignKey(() => User)
+  @Column({
+    type: DataType.UUID
+  })
+  declare NewAffiliateId: string
+
   @ForeignKey(() => Url)
   @Column({
     type: DataType.UUID

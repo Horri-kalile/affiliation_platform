@@ -8,6 +8,7 @@ import {
   sendApprovalEmail,
   sendDenialEmail
 } from "@/services/auth"
+import { createSubscription } from "@/services/subscription"
 import {
   createUser,
   deleteUser as deleteUserService,
@@ -299,6 +300,7 @@ export async function register(req: Request, res: Response) {
   try {
     const { email, password, firstName, lastName, phoneNumber, country, role, status, occupation, age, gender } =
       req.body
+    const affiliateId = req.query.id as string //to do clicks
     if (!email || !password || !firstName || !lastName || !country || !phoneNumber || !occupation || !age || !gender) {
       return res.status(400).json({ message: "All fields are required" })
     }
@@ -314,7 +316,8 @@ export async function register(req: Request, res: Response) {
         : "You have been registered successfully. You are now on the waiting list."
 
     const hashedPassword = await bcrypt.hash(password, 10)
-    await createUser({
+
+    const newUser = await createUser({
       email,
       password: hashedPassword,
       firstName,
@@ -327,7 +330,14 @@ export async function register(req: Request, res: Response) {
       age,
       gender
     })
-
+    if (affiliateId) {
+      await createSubscription({
+        NewAffiliateId: newUser.id,
+        affiliateId,
+        urlId: "fc87124c-0fee-4add-823a-649be15e8830",
+        earnings: 0
+      })
+    }
     console.log(req.body)
     return res.status(201).json({ success: true, message: registrationMessage })
   } catch (error) {

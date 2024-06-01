@@ -1,14 +1,17 @@
 import Url from "@/models/url.model"
 import User from "@/models/user.model"
 import {
+  approveAffiliateUrls as approveService,
   createAffiliateUrl,
   deleteAffiliateUrl,
+  denyAffiliateUrls as denyService,
   fetchAffiliateUrlByIds,
   fetchAllAffiliateUrls,
-  approveAffiliateUrls as approveService,
-  denyAffiliateUrls as denyService
+  fetchUrlsOfAnAffiliate
 } from "@/services/affiliateUrl"
-import { AffiliateUrlStatusUpdate } from "@/types"
+import { verifyAccessToken } from "@/services/auth"
+import { fetchUrlById } from "@/services/url"
+import { AffiliateUrlStatusUpdate, UserType } from "@/types"
 import { Request, Response } from "express"
 
 export const createNewAffiliateUrl = async (req: Request, res: Response) => {
@@ -34,6 +37,60 @@ export const getAllAffiliateUrls = async (req: Request, res: Response) => {
   try {
     const affiliateUrls = await fetchAllAffiliateUrls()
     return res.status(200).json({ success: true, data: affiliateUrls })
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message })
+  }
+}
+
+export const getUrlsOfAnAffiliate = async (req: Request, res: Response) => {
+  try {
+    const authHeader = req.headers["authorization"]
+    console.log("authHeader", authHeader)
+    const accessToken = authHeader && authHeader.split(" ")[1]
+    if (!accessToken) {
+      return res.status(401).json({ message: "Access token is missing" })
+    }
+    const decodedToken = verifyAccessToken(accessToken)
+    if (!decodedToken) {
+      return res.status(403).json({ message: "Invalid access token" })
+    }
+    const affiliateId = (decodedToken as UserType).id
+    const affiliate = await User.findByPk(affiliateId)
+    if (!affiliate) {
+      return res.status(404).json({ success: false, message: "Affiliate not found" })
+    }
+
+    const affiliateUrls = await fetchUrlsOfAnAffiliate(affiliateId)
+    const list = []
+
+    for (const affiliateUrl of affiliateUrls) {
+      const url = await fetchUrlById(affiliateUrl.url_id)
+      console.log("item", {
+        affiliate_id: affiliateUrl.affiliate_id,
+        url_id: affiliateUrl.url_id,
+        status: affiliateUrl.status,
+        url: url.url,
+        CompanyName: url.CompanyName,
+        Description: url.Description,
+        createdAt: url.createdAt,
+        updatedAt: url.updatedAt
+      })
+      if (affiliateUrl.status === "approved") {
+        list.push({
+          affiliate_id: affiliateUrl.affiliate_id,
+          url_id: affiliateUrl.url_id,
+          status: affiliateUrl.status,
+          url: url.url,
+          CompanyName: url.CompanyName,
+          Description: url.Description,
+          createdAt: url.createdAt,
+          updatedAt: url.updatedAt
+        })
+      }
+    }
+    console.log("list", list)
+
+    return res.status(200).json({ success: true, data: list })
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message })
   }

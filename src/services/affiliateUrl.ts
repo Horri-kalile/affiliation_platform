@@ -15,6 +15,12 @@ export const fetchAllAffiliateUrls = async (): Promise<AffiliateUrl[]> => {
   return affiliateUrls
 }
 
+export const fetchUrlsOfAnAffiliate = async (affiliate_id: string): Promise<AffiliateUrl[] | null> => {
+  const affiliateUrl = await AffiliateUrl.findAll({
+    where: { affiliate_id }
+  })
+  return affiliateUrl
+}
 export const fetchAffiliateUrlByIds = async (affiliate_id: string, url_id: string): Promise<AffiliateUrl | null> => {
   const affiliateUrl = await AffiliateUrl.findOne({
     where: { affiliate_id, url_id }
