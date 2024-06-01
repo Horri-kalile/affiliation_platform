@@ -11,7 +11,7 @@ import { Request, Response } from "express"
 
 export const createNewSubscription = async (req: Request, res: Response) => {
   try {
-    const { affiliateId, urlId, earnings }: SubscriptionType = req.body
+    const { affiliateId, urlId, earnings, NewAffiliateId }: SubscriptionType = req.body
     const affiliate = await User.findByPk(affiliateId)
     if (!affiliate) {
       return res.status(404).json({ success: false, message: "Affiliate not found" })
@@ -20,7 +20,7 @@ export const createNewSubscription = async (req: Request, res: Response) => {
     if (!url) {
       return res.status(404).json({ success: false, message: "URL not found" })
     }
-    const newSubscription = await createSubscription({ affiliateId, urlId, earnings })
+    const newSubscription = await createSubscription({ affiliateId, urlId, earnings, NewAffiliateId })
     return res.status(201).json({ success: true, data: newSubscription })
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message })
