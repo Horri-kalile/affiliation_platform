@@ -1,10 +1,11 @@
 import {
+  approveAffiliateUrls,
   createNewAffiliateUrl,
   deleteExistingAffiliateUrl,
+  denyAffiliateUrls,
   getAffiliateUrlByIds,
   getAllAffiliateUrls,
-  approveAffiliateUrls,
-  denyAffiliateUrls
+  getUrlsOfAnAffiliate
 } from "@/controllers/affiliateUrl"
 import { authenticateToken, permission } from "@/middleware/authMiddleware"
 import express from "express"
@@ -12,6 +13,12 @@ import express from "express"
 const router = express.Router()
 
 router.get("/affiliate-urls", authenticateToken, permission(["admin", "secretary", "affiliate"]), getAllAffiliateUrls)
+router.get(
+  "/affiliate-my-urls",
+  authenticateToken,
+  permission(["admin", "secretary", "affiliate"]),
+  getUrlsOfAnAffiliate
+)
 router.post("/affiliate-urls/new", authenticateToken, permission(["affiliate"]), createNewAffiliateUrl)
 router.get("/affiliate-urls/:affiliate_id/:url_id", authenticateToken, getAffiliateUrlByIds)
 router.delete(
