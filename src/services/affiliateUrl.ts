@@ -39,7 +39,9 @@ export const approveAffiliateUrls = async (
   const results: { success: boolean; message: string }[] = []
 
   for (const { affiliate_id, url_id } of urls) {
+    console.log(affiliate_id, url_id)
     const affiliateUrl = await AffiliateUrl.findOne({ where: { affiliate_id, url_id } })
+    console.log("findOne", affiliateUrl)
     if (affiliateUrl) {
       affiliateUrl.status = "approved"
       await affiliateUrl.save()
@@ -64,7 +66,7 @@ export const denyAffiliateUrls = async (
       await affiliateUrl.save()
       results.push({ success: true, message: `Affiliate URL ${url_id} denied.` })
     } else {
-      results.push({ success: false, message: `Affiliate URL ${url_id} not found.` })
+      results.push({ success: false, message: ` Affiliate URL ${url_id} not found.` })
     }
   }
 

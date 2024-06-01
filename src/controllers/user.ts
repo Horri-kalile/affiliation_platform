@@ -3,10 +3,10 @@ import {
   generateAccessToken,
   generateRefreshToken,
   generateResetToken,
-  sendResetEmail,
-  verifyResetToken,
   sendApprovalEmail,
-  sendDenialEmail
+  sendDenialEmail,
+  sendResetEmail,
+  verifyResetToken
 } from "@/services/auth"
 import { createSubscription } from "@/services/subscription"
 import {
@@ -37,7 +37,7 @@ export async function login(req: Request, res: Response) {
       return res.status(401).json({ message: "wrong credentials" })
     }
     if (user.role === "affiliate") {
-      if (user.status === "waiting list" || user.status === "") {
+      if (user.status === "waiting list") {
         return res.status(403).json({ message: "You are still in the waiting list" })
       }
       if (user.status === "denied") {
@@ -300,7 +300,8 @@ export async function register(req: Request, res: Response) {
   try {
     const { email, password, firstName, lastName, phoneNumber, country, role, status, occupation, age, gender } =
       req.body
-    const affiliateId = req.query.id as string //to do clicks
+    const affiliateId = req.query.ref as string //to do clicks
+    console.log("ref=", affiliateId)
     if (!email || !password || !firstName || !lastName || !country || !phoneNumber || !occupation || !age || !gender) {
       return res.status(400).json({ message: "All fields are required" })
     }
@@ -331,12 +332,16 @@ export async function register(req: Request, res: Response) {
       gender
     })
     if (affiliateId) {
-      await createSubscription({
-        NewAffiliateId: newUser.id,
-        affiliateId,
-        urlId: "fc87124c-0fee-4add-823a-649be15e8830",
-        earnings: 0
-      })
+      const existingUser = await User.findByPk(affiliateId)
+      console.log("existingUser", existingUser)
+      if (existingUser) {
+        const sub = await createSubscription({
+          NewAffiliateId: newUser.id,
+          affiliateId,
+          urlId: "fc87124c-0fee-4add-823a-649be15e8830"
+        })
+        console.log("sub", sub)
+      }
     }
     console.log(req.body)
     return res.status(201).json({ success: true, message: registrationMessage })

@@ -11,6 +11,7 @@ import {
 } from "@/services/affiliateUrl"
 import { verifyAccessToken } from "@/services/auth"
 import { fetchUrlById } from "@/services/url"
+import { fetchUserById } from "@/services/user"
 import { AffiliateUrlStatusUpdate, UserType } from "@/types"
 import { Request, Response } from "express"
 
@@ -36,7 +37,27 @@ export const createNewAffiliateUrl = async (req: Request, res: Response) => {
 export const getAllAffiliateUrls = async (req: Request, res: Response) => {
   try {
     const affiliateUrls = await fetchAllAffiliateUrls()
-    return res.status(200).json({ success: true, data: affiliateUrls })
+    const list = []
+    for (const affiliateUrl of affiliateUrls) {
+      const url = await fetchUrlById(affiliateUrl.url_id)
+      const user: UserType = await fetchUserById(affiliateUrl.affiliate_id)
+      if (affiliateUrl.status === "pending") {
+        list.push({
+          firstName: user.firstName,
+          lastName: user.lastName,
+          occupation: user.occupation,
+          affiliate_id: affiliateUrl.affiliate_id,
+          url_id: affiliateUrl.url_id,
+          status: affiliateUrl.status,
+          url: url.url,
+          CompanyName: url.CompanyName,
+          Description: url.Description,
+          createdAt: url.createdAt,
+          updatedAt: url.updatedAt
+        })
+      }
+    }
+    return res.status(200).json({ success: true, data: list })
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message })
   }
@@ -45,7 +66,6 @@ export const getAllAffiliateUrls = async (req: Request, res: Response) => {
 export const getUrlsOfAnAffiliate = async (req: Request, res: Response) => {
   try {
     const authHeader = req.headers["authorization"]
-    console.log("authHeader", authHeader)
     const accessToken = authHeader && authHeader.split(" ")[1]
     if (!accessToken) {
       return res.status(401).json({ message: "Access token is missing" })
@@ -65,16 +85,6 @@ export const getUrlsOfAnAffiliate = async (req: Request, res: Response) => {
 
     for (const affiliateUrl of affiliateUrls) {
       const url = await fetchUrlById(affiliateUrl.url_id)
-      console.log("item", {
-        affiliate_id: affiliateUrl.affiliate_id,
-        url_id: affiliateUrl.url_id,
-        status: affiliateUrl.status,
-        url: url.url,
-        CompanyName: url.CompanyName,
-        Description: url.Description,
-        createdAt: url.createdAt,
-        updatedAt: url.updatedAt
-      })
       if (affiliateUrl.status === "approved") {
         list.push({
           affiliate_id: affiliateUrl.affiliate_id,
@@ -88,7 +98,6 @@ export const getUrlsOfAnAffiliate = async (req: Request, res: Response) => {
         })
       }
     }
-    console.log("list", list)
 
     return res.status(200).json({ success: true, data: list })
   } catch (error) {
