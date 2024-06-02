@@ -31,6 +31,7 @@ router.patch("/affiliate-urls/approve", authenticateToken, permission(["admin", 
 router.patch("/affiliate-urls/deny", authenticateToken, permission(["admin", "secretary"]), denyAffiliateUrls)
 
 export default router
+
 /**
  * @swagger
  * tags:

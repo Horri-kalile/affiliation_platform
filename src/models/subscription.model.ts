@@ -9,6 +9,7 @@ import {
   Table,
   UpdatedAt
 } from "sequelize-typescript"
+import Earning from "./earning.model"
 import Url from "./url.model"
 import User from "./user.model"
 
@@ -43,10 +44,16 @@ class Subscription extends Model<Subscription> {
   })
   declare affiliateId: string
 
+  @ForeignKey(() => Earning)
+  @Column({
+    type: DataType.STRING
+  })
+  declare earningType: "subscription" | "click"
+
   @Column({
     type: DataType.DECIMAL(10, 2)
   })
-  declare earnings: number
+  declare earningAmount: number
 
   @CreatedAt
   declare createdAt?: Date
@@ -57,7 +64,13 @@ class Subscription extends Model<Subscription> {
   @BelongsTo(() => Url)
   url: Url
 
-  @BelongsTo(() => User)
+  @BelongsTo(() => User, { as: "affiliate", foreignKey: "affiliateId" })
   affiliate: User
+
+  @BelongsTo(() => User, { as: "newAffiliate", foreignKey: "NewAffiliateId" })
+  newAffiliate: User
+
+  @BelongsTo(() => Earning)
+  earning: Earning
 }
 export default Subscription

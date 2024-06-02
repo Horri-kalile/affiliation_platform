@@ -3,7 +3,8 @@ export type SubscriptionType = {
   NewAffiliateId: string
   urlId: string
   affiliateId: string
-  earnings: number
+  earningType: "subscription" | "click"
+  earningAmount: number
   createdAt?: Date
   updatedAt?: Date
 }

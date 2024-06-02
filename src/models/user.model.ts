@@ -82,7 +82,7 @@ class User extends Model<User> {
     type: DataType.STRING,
     defaultValue: "waiting list"
   })
-  declare status?: string
+  declare status: string
 
   @CreatedAt
   declare createdAt?: Date

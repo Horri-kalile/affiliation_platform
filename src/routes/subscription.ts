@@ -1,8 +1,8 @@
 import {
-  createNewSubscription,
   deleteExistingSubscription,
   getAllSubscriptions,
-  getSubscriptionById
+  getSubscriptionById,
+  updateSubscription
 } from "@/controllers/subscription"
 import { authenticateToken } from "@/middleware/authMiddleware"
 import express from "express"
@@ -10,12 +10,10 @@ import express from "express"
 const router = express.Router()
 
 router.get("/subscriptions", authenticateToken, getAllSubscriptions)
-router.post("/subscriptions/new", authenticateToken, createNewSubscription)
 router.get("/subscriptions/:id", authenticateToken, getSubscriptionById)
-router.delete("/subscriptions/:id/delete", authenticateToken, deleteExistingSubscription)
-
+router.delete("/subscriptions/:id", authenticateToken, deleteExistingSubscription)
+router.put("/subscriptions/:id", authenticateToken, updateSubscription)
 export default router
-
 /**
  * @swagger
  * tags:
