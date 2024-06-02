@@ -60,7 +60,6 @@ export function permission(requiredRole: string[]) {
       if (requiredRole.indexOf(userRole) === -1) {
         return res.status(403).json({ message: "Unauthorized access" })
       }
-
       next()
     } catch (error) {
       console.error(error)
