@@ -26,7 +26,7 @@ router.put("/reset-password", resetPassword)
 // super users
 router.get("/users", authenticateToken, permission(["secretary", "admin"]), fetchAllUsers)
 router.get("/users/:id", authenticateToken, getUserbyId)
-router.put("/users/:id/edit", authenticateToken, permission(["secretary", "admin"]), updateUser)
+router.put("/users/:id/edit", authenticateToken, updateUser)
 router.delete("/users/:id/delete", authenticateToken, permission(["secretary", "admin"]), deleteUser)
 router.post("/register-me", registerUserByRole)
 router.post("/users/approve-registration", authenticateToken, permission(["secretary", "admin"]), approveRegistration)
