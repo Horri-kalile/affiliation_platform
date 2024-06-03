@@ -44,3 +44,20 @@ export const getLatestUsers = async (req: Request, res: Response) => {
     res.status(500).json({ success: false, message: "Failed to fetch latest users", error })
   }
 }
+
+export const getLatestSubscriptions = async (req: Request, res: Response) => {
+  try {
+    const latestSubscriptions = await Subscription.findAll({
+      limit: 5,
+      order: [["createdAt", "DESC"]],
+      include: [
+        { model: Url, as: "url" }, // Ensure this alias matches your model definition
+        { model: User, as: "affiliate" }, // Ensure this alias matches your model definition
+        { model: User, as: "newAffiliate" } // Ensure this alias matches your model definition
+      ]
+    })
+    res.status(200).json({ success: true, data: latestSubscriptions })
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed to fetch latest subscriptions", error })
+  }
+}
