@@ -63,7 +63,7 @@ export const getLatestSubscriptions = async (req: Request, res: Response) => {
       include: [
         { model: Url, as: "url" }, // Ensure this alias matches your model definition
         { model: User, as: "affiliate" }, // Ensure this alias matches your model definition
-        { model: User, as: "newAffiliate" } // Ensure this alias matches your model definition
+        { model: User, as: "newUser" } // Ensure this alias matches your model definition
       ]
     })
     res.status(200).json({ success: true, data: latestSubscriptions })
