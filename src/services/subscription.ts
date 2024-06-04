@@ -20,11 +20,7 @@ export const getSubscriptionsWithRelatedData = async () => {
         },
         {
           model: User,
-          as: "newAffiliate"
-        },
-        {
-          model: Earning,
-          as: "earning"
+          as: "newUser"
         }
       ]
     })
@@ -37,13 +33,10 @@ export const getSubscriptionsWithRelatedData = async () => {
 }
 
 export const createSubscription = async (
-  subscriptionData: Pick<SubscriptionType, "NewAffiliateId" | "urlId" | "affiliateId">
+  subscriptionData: Pick<SubscriptionType, "newUserId" | "urlId" | "affiliateId">
 ): Promise<Subscription> => {
-  const earningAmout = await getEarningAmount("subscription")
   const newSubscription = await Subscription.create({
-    ...subscriptionData,
-    earningType: "subscription",
-    earningAmount: earningAmout
+    ...subscriptionData
   })
   return newSubscription
 }
@@ -56,16 +49,6 @@ export const fetchAllSubscriptions = async (): Promise<Subscription[]> => {
 export const fetchSubscriptionById = async (subscriptionId: string): Promise<Subscription | null> => {
   const subscription = await Subscription.findByPk(subscriptionId)
   return subscription
-}
-
-export const updateSubscription = async (id: string, earningAmount: number): Promise<boolean> => {
-  const [updatedRowsCount] = await Subscription.update(
-    { earningAmount },
-    {
-      where: { id } as any
-    }
-  )
-  return updatedRowsCount > 0
 }
 
 export const deleteSubscription = async (subscriptionId: string): Promise<boolean> => {

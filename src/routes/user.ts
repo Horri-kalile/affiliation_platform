@@ -12,11 +12,12 @@ import {
   getUserbyId
 } from "@/controllers/user"
 import { authenticateToken, permission } from "@/middleware/authMiddleware"
+import { createClickMiddleware } from "@/middleware/createClickMiddleware"
 import express from "express"
 const router = express.Router()
 
 // affiliates
-router.post("/register", register)
+router.post("/register", createClickMiddleware, register)
 
 // all users
 router.post("/login", login)

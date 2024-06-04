@@ -30,7 +30,7 @@ class Subscription extends Model<Subscription> {
   @Column({
     type: DataType.UUID
   })
-  declare NewAffiliateId: string
+  declare userId: string
 
   @ForeignKey(() => Url)
   @Column({
@@ -44,17 +44,6 @@ class Subscription extends Model<Subscription> {
   })
   declare affiliateId: string
 
-  @ForeignKey(() => Earning)
-  @Column({
-    type: DataType.STRING
-  })
-  declare earningType: "subscription" | "click"
-
-  @Column({
-    type: DataType.DECIMAL(10, 2)
-  })
-  declare earningAmount: number
-
   @CreatedAt
   declare createdAt?: Date
 
@@ -67,10 +56,7 @@ class Subscription extends Model<Subscription> {
   @BelongsTo(() => User, { as: "affiliate", foreignKey: "affiliateId" })
   affiliate: User
 
-  @BelongsTo(() => User, { as: "newAffiliate", foreignKey: "NewAffiliateId" })
+  @BelongsTo(() => User, { as: "newUser", foreignKey: "userId" })
   newAffiliate: User
-
-  @BelongsTo(() => Earning)
-  earning: Earning
 }
 export default Subscription

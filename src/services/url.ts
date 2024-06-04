@@ -1,6 +1,7 @@
 // src/services/url.ts
 import Url from "@/models/url.model"
 import { UrlType } from "@/types"
+import { FindOptions, Op } from "sequelize"
 
 export const createUrl = async (urlData: UrlType): Promise<Url> => {
   const newUrl = await Url.create(urlData)
@@ -15,6 +16,18 @@ export const fetchAllUrls = async (): Promise<Url[]> => {
 export const fetchUrlById = async (urlId: string): Promise<Url | null> => {
   const url = await Url.findByPk(urlId)
   return url
+}
+
+export const fetchUrlIdByBase = async (baseUrl: string): Promise<string | null> => {
+  const options: FindOptions = {
+    where: {
+      url: {
+        [Op.like]: `%${baseUrl}%`
+      }
+    }
+  } as FindOptions
+  const url = await Url.findOne(options)
+  return url ? url.id : null
 }
 
 export const updateUrl = async (urlId: string, urlData: unknown): Promise<boolean> => {

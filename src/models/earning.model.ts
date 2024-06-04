@@ -1,5 +1,4 @@
 import { Column, CreatedAt, DataType, HasMany, Model, PrimaryKey, Table, UpdatedAt } from "sequelize-typescript"
-import Subscription from "./subscription.model"
 
 @Table({
   tableName: "earnings",
@@ -26,7 +25,6 @@ class Earning extends Model<Earning> {
   @UpdatedAt
   declare updatedAt?: Date
 
-  @HasMany(() => Subscription)
-  subscriptions: Subscription[]
+
 }
 export default Earning

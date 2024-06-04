@@ -9,6 +9,7 @@ import {
   verifyResetToken
 } from "@/services/auth"
 import { createSubscription } from "@/services/subscription"
+import { fetchUrlIdByBase } from "@/services/url"
 import {
   createUser,
   deleteUser as deleteUserService,
@@ -300,8 +301,9 @@ export async function register(req: Request, res: Response) {
   try {
     const { email, password, firstName, lastName, phoneNumber, country, role, status, occupation, age, gender } =
       req.body
-    const affiliateId = req.query.ref as string //to do clicks
-    console.log("ref=", affiliateId)
+    const affiliateId = req.query.ref as string
+    console.log("aaaaaaaaaaaaaaaa", affiliateId)
+
     if (!email || !password || !firstName || !lastName || !country || !phoneNumber || !occupation || !age || !gender) {
       return res.status(400).json({ message: "All fields are required" })
     }
@@ -334,11 +336,18 @@ export async function register(req: Request, res: Response) {
     if (affiliateId) {
       const existingUser = await User.findByPk(affiliateId)
       console.log("existingUser", existingUser)
+
+      const fullUrl = req.protocol + "://" + req.get("host") + req.originalUrl
+      const urlObj = new URL(fullUrl)
+      const baseUrl = urlObj.hostname
+
+      const urlId = await fetchUrlIdByBase(baseUrl)
+
       if (existingUser) {
         const sub = await createSubscription({
-          NewAffiliateId: newUser.id,
+          newUserId: newUser.id,
           affiliateId,
-          urlId: "fc87124c-0fee-4add-823a-649be15e8830"
+          urlId: urlId
         })
         console.log("sub", sub)
       }
