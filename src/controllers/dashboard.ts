@@ -37,7 +37,11 @@ export const getLatestUsers = async (req: Request, res: Response) => {
   try {
     const latestUsers = await User.findAll({
       limit: 5,
-      order: [["createdAt", "DESC"]]
+      order: [["createdAt", "DESC"]],
+      where: {
+        status: "approved",
+        role: "affiliate"
+      }
     })
 
     res.status(200).json({ success: true, data: latestUsers })
@@ -61,9 +65,9 @@ export const getLatestSubscriptions = async (req: Request, res: Response) => {
       limit: 5,
       order: [["createdAt", "DESC"]],
       include: [
-        { model: Url, as: "url" }, // Ensure this alias matches your model definition
-        { model: User, as: "affiliate" }, // Ensure this alias matches your model definition
-        { model: User, as: "newUser" } // Ensure this alias matches your model definition
+        { model: Url, as: "url" },
+        { model: User, as: "affiliate" },
+        { model: User, as: "newUser" }
       ]
     })
     res.status(200).json({ success: true, data: latestSubscriptions })
