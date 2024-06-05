@@ -302,7 +302,6 @@ export async function register(req: Request, res: Response) {
     const { email, password, firstName, lastName, phoneNumber, country, role, status, occupation, age, gender } =
       req.body
     const affiliateId = req.query.ref as string
-    console.log("aaaaaaaaaaaaaaaa", affiliateId)
 
     if (!email || !password || !firstName || !lastName || !country || !phoneNumber || !occupation || !age || !gender) {
       return res.status(400).json({ message: "All fields are required" })

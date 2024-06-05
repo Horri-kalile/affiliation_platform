@@ -27,6 +27,11 @@ class Click extends Model<Click> {
   })
   declare affiliateId: string
 
+  @Column({
+    type: DataType.STRING
+  })
+  declare ipAddress: string
+
   @CreatedAt
   @Column({
     type: DataType.DATE,
@@ -40,4 +45,5 @@ class Click extends Model<Click> {
   @BelongsTo(() => User)
   affiliate: User
 }
+
 export default Click

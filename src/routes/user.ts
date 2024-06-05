@@ -17,7 +17,8 @@ import express from "express"
 const router = express.Router()
 
 // affiliates
-router.post("/register", createClickMiddleware, register)
+router.get("/register", createClickMiddleware)
+router.post("/register", register)
 
 // all users
 router.post("/login", login)
