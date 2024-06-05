@@ -30,29 +30,35 @@ export const fetchUrlIdByBase = async (baseUrl: string): Promise<string | null> 
   return url ? url.id : null
 }
 
-export const fetchAdvertisedUrls = async (affiliateId: string) => {
+export const fetchAdvertisedUrls = async (affiliateId?: string) => {
   try {
-    const urls = await Url.findAll({
+    let urlsQuery: any = {
       include: [
         {
           model: User,
           as: "affiliates",
-          where: { id: affiliateId },
           through: { attributes: [] }
         }
       ]
-    })
+    }
 
-    const count = await Url.count({
+    let countQuery: any = {
       include: [
         {
           model: User,
           as: "affiliates",
-          where: { id: affiliateId },
           through: { attributes: [] }
         }
       ]
-    })
+    }
+
+    if (affiliateId) {
+      urlsQuery.include[0].where = { id: affiliateId }
+      countQuery.include[0].where = { id: affiliateId }
+    }
+
+    const urls = await Url.findAll(urlsQuery)
+    const count = await Url.count(countQuery)
 
     return { urls, count }
   } catch (error) {

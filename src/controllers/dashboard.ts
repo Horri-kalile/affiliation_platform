@@ -7,57 +7,23 @@ import Click from "@/models/click.model"
 import moment from "moment"
 import { Op } from "sequelize"
 import { fetchAdvertisedUrls } from "@/services/url"
-import { Console } from "console"
 
 export const getAffiliatesCount = async (req: Request, res: Response) => {
   try {
-    const currentMonthCount = await user.count()
-    const previousMonthCount = await getPreviousMonthUserCount()
-    const percentageChange = calculatePercentageChange(previousMonthCount, currentMonthCount)
+    const affiliates = await User.findAndCountAll({
+      where: { role: "affiliate" }
+    })
+    const previousMonthCount = await getPreviousMonthUserCount("affiliate")
 
-    res.status(200).json({ count: currentMonthCount, percentageChange })
+    const percentageChange = calculatePercentageChange(previousMonthCount, affiliates.count)
+
+    res.status(200).json({ percentageChange, affiliates })
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
 }
 
-export const getSubscriptionsCount = async (req: Request, res: Response) => {
-  try {
-    const currentMonthCount = await Subscription.count()
-    const previousMonthCount = await getPreviousMonthSubscriptionCount()
-    const percentageChange = calculatePercentageChange(previousMonthCount, currentMonthCount)
-
-    res.status(200).json({ count: currentMonthCount, percentageChange })
-  } catch (error) {
-    res.status(500).json({ message: error.message })
-  }
-}
-
-export const getClicksCount = async (req: Request, res: Response) => {
-  try {
-    const currentMonthCount = await Click.count()
-    const previousMonthCount = await getPreviousMonthClickCount()
-    const percentageChange = calculatePercentageChange(previousMonthCount, currentMonthCount)
-
-    res.status(200).json({ count: currentMonthCount, percentageChange })
-  } catch (error) {
-    res.status(500).json({ message: error.message })
-  }
-}
-
-export const getUrlsCount = async (req: Request, res: Response) => {
-  try {
-    const currentMonthCount = await Url.count()
-    const previousMonthCount = await getPreviousMonthUrlCount()
-    const percentageChange = calculatePercentageChange(previousMonthCount, currentMonthCount)
-
-    res.status(200).json({ count: currentMonthCount, percentageChange })
-  } catch (error) {
-    res.status(500).json({ message: error.message })
-  }
-}
-
-const getPreviousMonthCount = async (Model: any, affiliateId?: string, urlId?: string) => {
+const getPreviousMonthCount = async (Model: any, role?: string, affiliateId?: string, urlId?: string) => {
   const currentMonthYear = moment().startOf("month").format("YYYY-MM")
   const previousMonthYear = moment().subtract(1, "month").startOf("month").format("YYYY-MM")
 
@@ -70,23 +36,26 @@ const getPreviousMonthCount = async (Model: any, affiliateId?: string, urlId?: s
     }
 
     if (affiliateId) {
-      whereClause.affiliateId = affiliateId
+      whereClause.id = affiliateId
     }
     if (urlId) {
       whereClause.urlId = urlId
     }
-
-    const count = await Model.count({
+    if (role) {
+      whereClause.role = role
+    }
+    let count = await Model.count({
       where: whereClause
     })
+
     return count
   } catch (error) {
     throw new Error(`Error counting elements within date range: ${error.message}`)
   }
 }
 
-export const getPreviousMonthUserCount = async () => {
-  return await getPreviousMonthCount(user)
+export const getPreviousMonthUserCount = async (role: string) => {
+  return await getPreviousMonthCount(User, role)
 }
 
 export const getPreviousMonthSubscriptionCount = async () => {
@@ -159,7 +128,10 @@ export const getAffiliateClicksByUrl = async (req: Request, res: Response) => {
   const { affiliateId, urlId } = req.query
 
   try {
-    const whereClause: any = { affiliateId }
+    const whereClause: any = {}
+    if (affiliateId) {
+      whereClause.affiliateId = affiliateId
+    }
     if (urlId) {
       whereClause.urlId = urlId
     }
@@ -170,7 +142,6 @@ export const getAffiliateClicksByUrl = async (req: Request, res: Response) => {
 
     const previousMonthCount = await getPreviousMonthCount(Click, affiliateId as string, urlId as string)
     const percentageChange = calculatePercentageChange(previousMonthCount, currentMonthCount)
-
     res.status(200).json({ success: true, count: currentMonthCount, percentageChange })
   } catch (error) {
     res.status(500).json({ success: false, message: "Failed to fetch clicks", error })
@@ -181,7 +152,10 @@ export const getAffiliateSubscriptionsByUrl = async (req: Request, res: Response
   const { affiliateId, urlId } = req.query
 
   try {
-    const whereClause: any = { affiliateId }
+    const whereClause: any = {}
+    if (affiliateId) {
+      whereClause.any = affiliateId
+    }
     if (urlId) {
       whereClause.urlId = urlId
     }
@@ -203,9 +177,13 @@ export const getAffilateAdvertisedUrls = async (req: Request, res: Response) => 
   const { affiliateId } = req.query
 
   try {
-    const { urls, count } = await fetchAdvertisedUrls(affiliateId as string)
-
-    res.status(200).json({ success: true, data: urls, count })
+    if (affiliateId) {
+      const { urls, count } = await fetchAdvertisedUrls(affiliateId as string)
+      res.status(200).json({ success: true, data: urls, count })
+    } else {
+      const { urls, count } = await fetchAdvertisedUrls()
+      res.status(200).json({ success: true, data: urls, count })
+    }
   } catch (error) {
     res.status(500).json({ success: false, message: error.message })
   }
