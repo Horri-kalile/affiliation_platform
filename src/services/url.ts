@@ -1,5 +1,5 @@
-// src/services/url.ts
 import Url from "@/models/url.model"
+import User from "@/models/user.model"
 import { UrlType } from "@/types"
 import { FindOptions, Op } from "sequelize"
 
@@ -28,6 +28,36 @@ export const fetchUrlIdByBase = async (baseUrl: string): Promise<string | null> 
   } as FindOptions
   const url = await Url.findOne(options)
   return url ? url.id : null
+}
+
+export const fetchAdvertisedUrls = async (affiliateId: string) => {
+  try {
+    const urls = await Url.findAll({
+      include: [
+        {
+          model: User,
+          as: "affiliates",
+          where: { id: affiliateId },
+          through: { attributes: [] }
+        }
+      ]
+    })
+
+    const count = await Url.count({
+      include: [
+        {
+          model: User,
+          as: "affiliates",
+          where: { id: affiliateId },
+          through: { attributes: [] }
+        }
+      ]
+    })
+
+    return { urls, count }
+  } catch (error) {
+    throw new Error(`Failed to fetch advertised URLs: ${error.message}`)
+  }
 }
 
 export const updateUrl = async (urlId: string, urlData: unknown): Promise<boolean> => {

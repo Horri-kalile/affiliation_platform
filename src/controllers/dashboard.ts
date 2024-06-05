@@ -6,6 +6,8 @@ import User from "@/models/user.model"
 import Click from "@/models/click.model"
 import moment from "moment"
 import { Op } from "sequelize"
+import { fetchAdvertisedUrls } from "@/services/url"
+import { Console } from "console"
 
 export const getAffiliatesCount = async (req: Request, res: Response) => {
   try {
@@ -55,18 +57,27 @@ export const getUrlsCount = async (req: Request, res: Response) => {
   }
 }
 
-const getPreviousMonthCount = async (Model: any) => {
+const getPreviousMonthCount = async (Model: any, affiliateId?: string, urlId?: string) => {
   const currentMonthYear = moment().startOf("month").format("YYYY-MM")
   const previousMonthYear = moment().subtract(1, "month").startOf("month").format("YYYY-MM")
 
   try {
-    const count = await Model.count({
-      where: {
-        createdAt: {
-          [Op.gte]: previousMonthYear,
-          [Op.lt]: currentMonthYear
-        }
+    let whereClause: any = {
+      createdAt: {
+        [Op.gte]: previousMonthYear,
+        [Op.lt]: currentMonthYear
       }
+    }
+
+    if (affiliateId) {
+      whereClause.affiliateId = affiliateId
+    }
+    if (urlId) {
+      whereClause.urlId = urlId
+    }
+
+    const count = await Model.count({
+      where: whereClause
     })
     return count
   } catch (error) {
@@ -117,6 +128,16 @@ export const getLatestUsers = async (req: Request, res: Response) => {
 
 export const getLatestSubscriptions = async (req: Request, res: Response) => {
   try {
+    const { affiliateId, urlId } = req.query
+
+    const whereClause: any = {}
+    if (affiliateId) {
+      whereClause.affiliateId = affiliateId
+    }
+    if (urlId) {
+      whereClause.urlId = urlId
+    }
+
     const latestSubscriptions = await Subscription.findAll({
       limit: 5,
       order: [["createdAt", "DESC"]],
@@ -124,10 +145,68 @@ export const getLatestSubscriptions = async (req: Request, res: Response) => {
         { model: Url, as: "url" },
         { model: User, as: "affiliate" },
         { model: User, as: "newUser" }
-      ]
+      ],
+      where: whereClause
     })
+
     res.status(200).json({ success: true, data: latestSubscriptions })
   } catch (error) {
     res.status(500).json({ success: false, message: "Failed to fetch latest subscriptions", error })
+  }
+}
+
+export const getAffiliateClicksByUrl = async (req: Request, res: Response) => {
+  const { affiliateId, urlId } = req.query
+
+  try {
+    const whereClause: any = { affiliateId }
+    if (urlId) {
+      whereClause.urlId = urlId
+    }
+
+    const currentMonthCount = await Click.count({
+      where: whereClause
+    })
+
+    const previousMonthCount = await getPreviousMonthCount(Click, affiliateId as string, urlId as string)
+    const percentageChange = calculatePercentageChange(previousMonthCount, currentMonthCount)
+
+    res.status(200).json({ success: true, count: currentMonthCount, percentageChange })
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed to fetch clicks", error })
+  }
+}
+
+export const getAffiliateSubscriptionsByUrl = async (req: Request, res: Response) => {
+  const { affiliateId, urlId } = req.query
+
+  try {
+    const whereClause: any = { affiliateId }
+    if (urlId) {
+      whereClause.urlId = urlId
+    }
+
+    const currentMonthCount = await Subscription.count({
+      where: whereClause
+    })
+
+    const previousMonthCount = await getPreviousMonthCount(Subscription, affiliateId as string, urlId as string)
+    const percentageChange = calculatePercentageChange(previousMonthCount, currentMonthCount)
+
+    res.status(200).json({ success: true, count: currentMonthCount, percentageChange })
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed to fetch subscriptions", error })
+  }
+}
+
+export const getAffilateAdvertisedUrls = async (req: Request, res: Response) => {
+  const { affiliateId } = req.query
+
+  try {
+    const { urls, count } = await fetchAdvertisedUrls(affiliateId as string)
+
+    res.status(200).json({ success: true, data: urls, count })
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message })
   }
 }
