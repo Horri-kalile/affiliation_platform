@@ -32,7 +32,7 @@ class Click extends Model<Click> {
     type: DataType.DATE,
     defaultValue: DataType.NOW
   })
-  declare clickDate?: Date
+  declare createdAt?: Date
 
   @BelongsTo(() => Url)
   url: Url

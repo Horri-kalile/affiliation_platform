@@ -43,6 +43,10 @@ class Url extends Model<URL> {
   declare Description: string
 
   @CreatedAt
+  @Column({
+    type: DataType.DATE,
+    defaultValue: DataType.NOW
+  })
   declare createdAt?: Date
 
   @UpdatedAt

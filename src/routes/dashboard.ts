@@ -5,7 +5,7 @@ import {
   getLatestUsers,
   getSubscriptionsCount,
   getUrlsCount,
-  getClicksCount // Import the new function
+  getClicksCount 
 } from "@/controllers/dashboard"
 import { authenticateToken, permission } from "@/middleware/authMiddleware"
 

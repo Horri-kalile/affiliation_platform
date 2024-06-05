@@ -6,7 +6,7 @@ import { JwtPayload } from "jsonwebtoken"
 export async function authenticateToken(req: Request, res: Response, next: NextFunction) {
   try {
     const authHeader = req.headers["authorization"]
-    console.log("authHeader", authHeader)
+    // console.log("authHeader", authHeader)
     const accessToken = authHeader && authHeader.split(" ")[1]
 
     if (!accessToken) {
@@ -19,7 +19,7 @@ export async function authenticateToken(req: Request, res: Response, next: NextF
     }
     return next()
   } catch (error) {
-    console.error(error)
+    // console.error(error)
     return res.status(500).json({ message: "Internal server error" })
   }
 }
@@ -29,19 +29,19 @@ export async function refreshToken(req: Request, res: Response): Promise<Respons
     const authHeader = req.headers["authorization"]
     const token = authHeader && authHeader.split(" ")[1]
     if (!token) {
-      console.log("Refresh token is missing")
+      // console.log("Refresh token is missing")
       return res.status(400).json({ message: "Refresh token is missing" })
     }
     const decodedToken = verifyRefreshToken(token)
-    console.log("Decoded refresh token:", decodedToken)
+    // console.log("Decoded refresh token:", decodedToken)
     if (typeof decodedToken === "string" || !decodedToken) {
-      console.log("Invalid refresh token")
+      // console.log("Invalid refresh token")
       return res.status(403).json({ message: "Invalid refresh token" })
     }
     const accessToken = generateAccessToken(decodedToken as UserType)
     return res.status(200).json({ success: true, accessToken })
   } catch (error) {
-    console.error(error)
+    // console.error(error)
     return res.status(500).json({ message: "Internal server error" })
   }
 }
@@ -62,7 +62,7 @@ export function permission(requiredRole: string[]) {
       }
       next()
     } catch (error) {
-      console.error(error)
+      // console.error(error)
       return res.status(500).json({ message: "Internal server error" })
     }
     return null

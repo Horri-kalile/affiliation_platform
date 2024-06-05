@@ -45,6 +45,10 @@ class Subscription extends Model<Subscription> {
   declare affiliateId: string
 
   @CreatedAt
+  @Column({
+    type: DataType.DATE,
+    defaultValue: DataType.NOW
+  })
   declare createdAt?: Date
 
   @UpdatedAt

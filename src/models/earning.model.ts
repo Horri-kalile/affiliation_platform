@@ -20,6 +20,10 @@ class Earning extends Model<Earning> {
   declare amount: number
 
   @CreatedAt
+  @Column({
+    type: DataType.DATE,
+    defaultValue: DataType.NOW
+  })
   declare createdAt?: Date
 
   @UpdatedAt

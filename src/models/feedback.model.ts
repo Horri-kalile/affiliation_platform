@@ -47,6 +47,10 @@ class Feedback extends Model<Feedback> {
   user: User
 
   @CreatedAt
+  @Column({
+    type: DataType.DATE,
+    defaultValue: DataType.NOW
+  })
   declare createdAt?: Date
 
   @UpdatedAt
