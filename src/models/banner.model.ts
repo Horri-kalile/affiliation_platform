@@ -1,4 +1,15 @@
-import { Column, CreatedAt, DataType, Model, PrimaryKey, Table, UpdatedAt } from "sequelize-typescript"
+import {
+  BelongsTo,
+  Column,
+  CreatedAt,
+  DataType,
+  ForeignKey,
+  Model,
+  PrimaryKey,
+  Table,
+  UpdatedAt
+} from "sequelize-typescript"
+import Url from "./url.model"
 
 @Table({
   tableName: "banners",
@@ -11,23 +22,27 @@ class Banner extends Model<Banner> {
     type: DataType.UUID,
     defaultValue: DataType.UUIDV4
   })
-  id: string
+  declare id: string
 
   @Column({
     type: DataType.TEXT
   })
-  src: string
+  declare src: string
 
+  @ForeignKey(() => Url)
   @Column({
-    type: DataType.STRING
+    type: DataType.UUID
   })
-  urlId: string
+  declare urlId: string
 
   @CreatedAt
-  createdAt: Date
+  declare createdAt: Date
 
   @UpdatedAt
-  updatedAt: Date
+  declare updatedAt: Date
+
+  @BelongsTo(() => Url)
+  url: Url
 }
 
 export default Banner

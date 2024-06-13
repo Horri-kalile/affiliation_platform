@@ -44,7 +44,7 @@ export const deleteFeedback = async (req: Request, res: Response) => {
     const { id } = req.params
     const success = await deleteFeedbackService(id)
     if (success) {
-      res.status(204).json()
+      res.status(200).json({ message: "Feedback deleted successfully" })
     } else {
       res.status(404).json({ error: "Feedback not found" })
     }

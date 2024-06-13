@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from "express"
-import { createClick } from "@/services/click"
-import { ClickType } from "@/types"
-import { fetchUrlIdByBase } from "@/services/url"
 import Click from "@/models/click.model"
+import { createClick } from "@/services/click"
+import { fetchUrlIdByBase } from "@/services/url"
+import { ClickType } from "@/types"
+import { NextFunction, Request, Response } from "express"
 
 export const createClickMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -30,6 +30,7 @@ export const createClickMiddleware = async (req: Request, res: Response, next: N
     }
   } catch (error) {
     console.error("Error creating click:", error)
+  } finally {
+    next()
   }
-  next()
 }

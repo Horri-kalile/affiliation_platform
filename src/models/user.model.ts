@@ -13,6 +13,7 @@ import AffiliateUrl from "./affiliateUrl.model"
 import Click from "./click.model"
 import Subscription from "./subscription.model"
 import Url from "./url.model"
+import Feedback from "./feedback.model"
 
 @Table({
   tableName: "users",
@@ -96,6 +97,9 @@ class User extends Model<User> {
 
   @HasMany(() => Click)
   clicks: Click[]
+
+  @HasMany(() => Feedback)
+  feedbacks: Feedback[]
 
   @HasMany(() => Subscription)
   subscriptions: Subscription[]

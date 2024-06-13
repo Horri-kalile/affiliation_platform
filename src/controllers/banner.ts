@@ -6,7 +6,6 @@ import {
   getBannerById as getBannerByIdService,
   fetchBannersByUrlId as getBannersByUrlId
 } from "../services/banner"
-import Banner from "@/models/banner.model"
 
 export const createBanner = async (req: Request, res: Response): Promise<void> => {
   try {

@@ -9,7 +9,6 @@ import {
   Table,
   UpdatedAt
 } from "sequelize-typescript"
-import Earning from "./earning.model"
 import Url from "./url.model"
 import User from "./user.model"
 
@@ -30,7 +29,7 @@ class Subscription extends Model<Subscription> {
   @Column({
     type: DataType.UUID
   })
-  declare userId: string
+  declare subId: string
 
   @ForeignKey(() => Url)
   @Column({
@@ -60,7 +59,7 @@ class Subscription extends Model<Subscription> {
   @BelongsTo(() => User, { as: "affiliate", foreignKey: "affiliateId" })
   affiliate: User
 
-  @BelongsTo(() => User, { as: "newUser", foreignKey: "userId" })
-  newAffiliate: User
+  @BelongsTo(() => User, { as: "sub", foreignKey: "subId" })
+  sub: User
 }
 export default Subscription

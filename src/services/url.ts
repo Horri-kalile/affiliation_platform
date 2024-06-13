@@ -19,6 +19,8 @@ export const fetchUrlById = async (urlId: string): Promise<Url | null> => {
 }
 
 export const fetchUrlIdByBase = async (baseUrl: string): Promise<string | null> => {
+  console.log("fetchUrlIdByBase:baseUrl", baseUrl)
+
   const options: FindOptions = {
     where: {
       url: {

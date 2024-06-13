@@ -43,9 +43,6 @@ class Feedback extends Model<Feedback> {
   })
   declare userId: string
 
-  @BelongsTo(() => User)
-  user: User
-
   @CreatedAt
   @Column({
     type: DataType.DATE,
@@ -55,6 +52,9 @@ class Feedback extends Model<Feedback> {
 
   @UpdatedAt
   declare updatedAt?: Date
+
+  @BelongsTo(() => User)
+  user: User
 }
 
 export default Feedback

@@ -1,6 +1,6 @@
 export type SubscriptionType = {
   id?: string
-  newUserId: string
+  subId: string
   urlId: string
   affiliateId: string
   createdAt?: Date

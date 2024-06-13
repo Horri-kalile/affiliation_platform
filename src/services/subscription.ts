@@ -1,10 +1,8 @@
 // src/services/subscription.ts
-import Earning from "@/models/earning.model"
 import Subscription from "@/models/subscription.model"
 import Url from "@/models/url.model"
 import User from "@/models/user.model"
 import { SubscriptionType } from "@/types"
-import { getEarningAmount } from "./earning"
 
 export const getSubscriptionsWithRelatedData = async () => {
   try {
@@ -20,7 +18,7 @@ export const getSubscriptionsWithRelatedData = async () => {
         },
         {
           model: User,
-          as: "newUser"
+          as: "sub"
         }
       ]
     })
@@ -33,7 +31,7 @@ export const getSubscriptionsWithRelatedData = async () => {
 }
 
 export const createSubscription = async (
-  subscriptionData: Pick<SubscriptionType, "newUserId" | "urlId" | "affiliateId">
+  subscriptionData: Pick<SubscriptionType, "subId" | "urlId" | "affiliateId">
 ): Promise<Subscription> => {
   const newSubscription = await Subscription.create({
     ...subscriptionData

@@ -1,12 +1,11 @@
-import { Request, Response } from "express"
-import user from "@/models/user.model"
+import Click from "@/models/click.model"
 import Subscription from "@/models/subscription.model"
 import Url from "@/models/url.model"
 import User from "@/models/user.model"
-import Click from "@/models/click.model"
+import { fetchAdvertisedUrls } from "@/services/url"
+import { Request, Response } from "express"
 import moment from "moment"
 import { Op } from "sequelize"
-import { fetchAdvertisedUrls } from "@/services/url"
 
 export const getAffiliatesCount = async (req: Request, res: Response) => {
   try {
@@ -28,7 +27,7 @@ const getPreviousMonthCount = async (Model: any, role?: string, affiliateId?: st
   const previousMonthYear = moment().subtract(1, "month").startOf("month").format("YYYY-MM")
 
   try {
-    let whereClause: any = {
+    const whereClause: any = {
       createdAt: {
         [Op.gte]: previousMonthYear,
         [Op.lt]: currentMonthYear
@@ -44,7 +43,7 @@ const getPreviousMonthCount = async (Model: any, role?: string, affiliateId?: st
     if (role) {
       whereClause.role = role
     }
-    let count = await Model.count({
+    const count = await Model.count({
       where: whereClause
     })
 
@@ -113,7 +112,7 @@ export const getLatestSubscriptions = async (req: Request, res: Response) => {
       include: [
         { model: Url, as: "url" },
         { model: User, as: "affiliate" },
-        { model: User, as: "newUser" }
+        { model: User, as: "sub" }
       ],
       where: whereClause
     })
@@ -125,49 +124,39 @@ export const getLatestSubscriptions = async (req: Request, res: Response) => {
 }
 
 export const getAffiliateClicksByUrl = async (req: Request, res: Response) => {
-  const { affiliateId, urlId } = req.query
+  const { affiliateId } = req.query
 
   try {
     const whereClause: any = {}
     if (affiliateId) {
       whereClause.affiliateId = affiliateId
     }
-    if (urlId) {
-      whereClause.urlId = urlId
-    }
 
     const currentMonthCount = await Click.count({
       where: whereClause
     })
 
-    const previousMonthCount = await getPreviousMonthCount(Click, affiliateId as string, urlId as string)
-    const percentageChange = calculatePercentageChange(previousMonthCount, currentMonthCount)
-    res.status(200).json({ success: true, count: currentMonthCount, percentageChange })
+    res.status(200).json({ success: true, count: currentMonthCount })
   } catch (error) {
+    console.log("error in getAffiliateClicksByUrl:::", error)
+
     res.status(500).json({ success: false, message: "Failed to fetch clicks", error })
   }
 }
 
 export const getAffiliateSubscriptionsByUrl = async (req: Request, res: Response) => {
-  const { affiliateId, urlId } = req.query
+  const { affiliateId } = req.query
 
   try {
     const whereClause: any = {}
     if (affiliateId) {
-      whereClause.any = affiliateId
+      whereClause.affiliateId = affiliateId
     }
-    if (urlId) {
-      whereClause.urlId = urlId
-    }
-
     const currentMonthCount = await Subscription.count({
       where: whereClause
     })
 
-    const previousMonthCount = await getPreviousMonthCount(Subscription, affiliateId as string, urlId as string)
-    const percentageChange = calculatePercentageChange(previousMonthCount, currentMonthCount)
-
-    res.status(200).json({ success: true, count: currentMonthCount, percentageChange })
+    res.status(200).json({ success: true, count: currentMonthCount })
   } catch (error) {
     res.status(500).json({ success: false, message: "Failed to fetch subscriptions", error })
   }

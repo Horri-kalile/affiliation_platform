@@ -299,8 +299,20 @@ export async function denyRegistration(req: Request, res: Response) {
 // affiliates
 export async function register(req: Request, res: Response) {
   try {
-    const { email, password, firstName, lastName, phoneNumber, country, role, status, occupation, age, gender } =
-      req.body
+    const {
+      email,
+      password,
+      firstName,
+      lastName,
+      phoneNumber,
+      country,
+      role,
+      status,
+      occupation,
+      age,
+      gender,
+      baseUrl
+    } = req.body
     const affiliateId = req.query.ref as string
 
     if (!email || !password || !firstName || !lastName || !country || !phoneNumber || !occupation || !age || !gender) {
@@ -335,23 +347,18 @@ export async function register(req: Request, res: Response) {
     if (affiliateId) {
       const existingUser = await User.findByPk(affiliateId)
       console.log("existingUser", existingUser)
-
-      const fullUrl = req.protocol + "://" + req.get("host") + req.originalUrl
-      const urlObj = new URL(fullUrl)
-      const baseUrl = urlObj.hostname
-
       const urlId = await fetchUrlIdByBase(baseUrl)
+      console.log("url", urlId)
 
-      if (existingUser) {
+      if (existingUser && urlId) {
         const sub = await createSubscription({
-          newUserId: newUser.id,
+          subId: newUser.id,
           affiliateId,
           urlId: urlId
         })
         console.log("sub", sub)
       }
     }
-    console.log(req.body)
     return res.status(201).json({ success: true, message: registrationMessage })
   } catch (error) {
     console.error(error)
